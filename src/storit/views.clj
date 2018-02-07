@@ -1,7 +1,9 @@
 (ns storit.views
   (:require [storit.db :as db]
             [clojure.string :as string]
-            [hiccup.page :as page]))
+            [hiccup.page :as page]
+            [hiccup.form :as form]))
+
 
 (defn gen-page-head
   [title]
@@ -9,19 +11,37 @@
    [:title title]
    (page/include-css "/css/styles.css")])
 
-(defn login
-  []
+
+(defn login-page
+  [& messages]
   (page/html5
-   (gen-page-head "Home")
-   [:h1 "Home"]
-   [:p "LOGIN BOX"]))
+   (gen-page-head "Storit")
+   [:h1 "Storit"]
+   (form/form-to [:post "/login"]
+                 [:input {:name "username"}]
+                 [:br]
+                 [:input {:name "password"
+                         :type "password"}]
+                 [:br]
+                 [:button {:type "Submit"} "Login"])
+   [:p (first messages)]
+   [:a {:href "/new-user"} "New user"]))
+
 
 (defn new-user
-  []
+  [& messages]
   (page/html5
    (gen-page-head "Create New User")
    [:h1 "Create New User"]
-   [:p "create new user"]))
+   (form/form-to [:post "/new-user"]
+                 [:input {:name "username"}]
+                 [:br]
+                 [:input {:name "password"
+                          :type "password"}]
+                 [:br]
+                 [:button {:type "Submit"} "Submit"])
+   [:p (first messages)]))
+
 
 (defn dashboard
   [userName]
