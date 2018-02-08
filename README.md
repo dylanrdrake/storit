@@ -1,4 +1,4 @@
-# storit
+# Storit
 
 The project is a light, simple persistent inventory tracker that stores data in an h2 instance and serves it via a restful API. Initially, a browser client will offer a simple GUI to access user data and eventually an Android client will be the main platform.
 
@@ -23,11 +23,10 @@ open a repl
 
     lein repl
     
-run database setup
+run database setup. this creates the database in the root directory of the project. 
 
     (require '[migrations.setup :as setup])
-    (ns migrations.setup)
-    (setup-db)
+    (setup/setup-db)
 
 To start a web server for the application, run:
 
