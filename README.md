@@ -1,6 +1,6 @@
 # Storit
 
-The project is a light, simple persistent inventory tracker that stores data in an h2 instance and serves it via a restful API. Initially, a browser client will offer a simple GUI to access user data and eventually an Android client will be the main platform.
+A light, simple persistent inventory tracker that stores data in an h2 instance and serves it via a restful API. A browser client is served from this API and will offer a simple GUI to access user data but, *eventually*, an Android client will be the main client platform that will access the the API.
 
 
 ## Prerequisites
