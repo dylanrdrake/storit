@@ -31,7 +31,7 @@
 (defn new-user
   [& messages]
   (page/html5
-   (gen-page-head "Create New User")
+   (gen-page-head "Storit")
    [:h1 "Create New User"]
    (form/form-to [:post "/new-user"]
                  [:input {:name "username"}]
@@ -47,6 +47,6 @@
   [userName]
   (let [tables (db/get-all-user-tables userName)]
     (page/html5
-     (gen-page-head "Dashboard")
+     (gen-page-head "Storit")
      [:h1 "Dashboard"]
      [:p tables])))

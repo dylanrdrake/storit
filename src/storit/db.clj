@@ -62,6 +62,16 @@
     (not (nil? (first results)))))
 
 
+(defn get-token
+  "Accepts a token string and
+  returns all fields for that record."
+  [token]
+  (let [results (jdbc/query db-spec
+                            ["select * from tokens where token=?"
+                             token])]
+    (first results)))
+
+
 (defn create-token
   "Returns a unique alpha-numeric token."
   []
@@ -75,43 +85,17 @@
       token)))
 
 
-(defn renew-token
-  "Replaces token with new token,
-  returns int of rows affected."
+(defn new-token
+  "Accepts a userName string and
+  inserts a new token record in TOKENS."
   [userName]
   (let [newtoken (create-token)
-        results (jdbc/update! db-spec
+        results (jdbc/insert! db-spec
                               :tokens
                               {:token newtoken
-                               :expires (java.util.Date. (+ (* 14 86400 1000) (.getTime (java.util.Date.))))}
-                              ["userName = ?" userName])]
-    (first results)))
-
-
-(defn create-user
-  "Accepts a userName string and password
-  string and returns the username string."
-  [userName password]
-  (let [token (create-token)
-        results (jdbc/insert! db-spec
-                              :users {:username userName
-                                      :password password})]
-    (jdbc/insert! db-spec
-                  :tokens
-                  {:token token
-                   :username userName
-                   :expires (java.util.Date. (+ (* 14 86400 1000) (.getTime (java.util.Date.))))}) ; plus x days
-    (first (vals (first results)))))
-
-
-(defn user-exists?
-  "Accepts a userName string and
-  returns true if user exists, false if not."
-  [userName]
-  (let [results (jdbc/query db-spec
-                            ["select username from users where username=?"
-                             userName])]
-    (not (nil? (first results)))))
+                               :username userName
+                               :expires (java.util.Date. (+ (* 14 86400 1000) (.getTime (java.util.Date.))))})]
+    (get-token newtoken)))
 
 
 (defn get-user
@@ -124,14 +108,25 @@
     (first results)))
 
 
-(defn get-token
-  "Accepts a token string and
-  returns all fields for that record."
-  [token]
+(defn create-user
+  "Accepts a userName string and passhash
+  string and returns the username string."
+  [userName passhash]
+  (let [newtoken (new-token userName)
+        results (jdbc/insert! db-spec
+                              :users {:username userName
+                                      :passhash passhash})]
+    (assoc (get-user userName) :authtoken {:token newtoken})))
+
+
+(defn user-exists?
+  "Accepts a userName string and
+  returns true if user exists, false if not."
+  [userName]
   (let [results (jdbc/query db-spec
-                            ["select * from tokens where token=?"
-                             token])]
-    (first results)))
+                            ["select username from users where username=?"
+                             userName])]
+    (not (nil? (first results)))))
 
 
 (defn token-active?

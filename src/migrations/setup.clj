@@ -7,7 +7,7 @@
     (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :users
                          [[:userName "varchar primary key"]
-                          [:password "varchar"]
+                          [:passhash "varchar"]
                           [:email "varchar"]]))
 
     (jdbc/db-do-commands conn
