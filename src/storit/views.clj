@@ -44,9 +44,11 @@
 
 
 (defn dashboard
-  [userName]
-  (let [tables (db/get-all-user-tables userName)]
+  [token]
+  (let [userName (db/userid-by-token token)
+        tables (db/get-all-user-tables token)]
     (page/html5
      (gen-page-head "Storit")
      [:h1 "Dashboard"]
+     [:h3 userName]
      [:p tables])))

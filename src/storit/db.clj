@@ -33,11 +33,22 @@
     results))
 
 
+(defn userid-by-token
+  "Accepts a token string and
+  returns a username string."
+  [token]
+  (let [results (jdbc/query db-spec
+                            ["select username from tokens where token=?"
+                             token])]
+    (first (vals (first results)))))
+
+
 (defn get-all-user-tables
   "Accepts a userName string and returns
   a clojure list of all of the user's table."
-  [userName]
-  (let [results (jdbc/query db-spec
+  [token]
+  (let [userName (userid-by-token token)
+        results (jdbc/query db-spec
                             ["select * from tables where userName=?"
                              userName])]
     results))
@@ -109,14 +120,15 @@
 
 
 (defn create-user
-  "Accepts a userName string and passhash
-  string and returns the username string."
+  "Accepts a userName string and passhash,
+  class new-token, inserts new user in USERS
+  table, returns the user map including new token."
   [userName passhash]
   (let [newtoken (new-token userName)
         results (jdbc/insert! db-spec
                               :users {:username userName
                                       :passhash passhash})]
-    (assoc (get-user userName) :authtoken {:token newtoken})))
+    (assoc (get-user userName) :token (:token newtoken))))
 
 
 (defn user-exists?
@@ -130,17 +142,11 @@
 
 
 (defn token-active?
+  "Accepts token string and returns true
+  if token is not expired and false if it is."
   [token]
   (let [expires (:expires (get-token token))
         current-date (java.util.Date.)]
     (neg? (compare current-date expires))))
 
 
-(defn userid-by-token
-  "Accepts a token string and
-  returns a username string."
-  [token]
-  (let [results (jdbc/query db-spec
-                            ["select username from tokens where token=?"
-                             token])]
-    (first results)))
