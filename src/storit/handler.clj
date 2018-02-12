@@ -41,6 +41,12 @@
         false))))
 
 
+(defn logout-user
+  "Returns response with no authtoken."
+  []
+  (assoc-in (resp/redirect "/") [:cookies :authtoken] "kill"))
+
+
 (defn login-user
   "Accepts username and password
   strings and returns dashboard if
@@ -49,46 +55,49 @@
   (if (auth-creds userName password)
     (let [newtoken (:token (db/new-token userName))]
       (set-token-cookie (resp/redirect "/dashboard") newtoken))
-    (views/login-page "Incorrect username or password.")))
+    (views/home-page "Incorrect username or password.")))
 
 
 (defn wrap-logged-in?
-  "Middleware function that checks if
-  a token exists and if it is active."
+  "Middleware that checks if a token
+  exists and if it is active."
   [handler]
   (fn [request]
     (let [uri (:uri request)
-          token (:value (get (:cookies request) "authtoken"))
-          userid (db/userid-by-token token)]
-      (if (or (= uri "/") (= uri "/dashboard"))
-        (if (nil? token)
-          (resp/redirect "/login")
-          (if (not (db/token-active? token))
-            (resp/redirect "/login")
-            (handler request))
-        (handler request)))))
+          token (:value (get (:cookies request) "authtoken"))]
+      (if (nil? token)
+        (if (= uri "/dashboard")
+          (resp/redirect "/")
+          (handler request))
+        (if (db/token-active? token)
+          (if (or (= uri "/dashboard") (= uri "/logout"))
+            (handler request)
+            (resp/redirect "/dashboard"))
+          (if (= uri "/dashboard")
+            (resp/redirect "/")
+            (handler request)))))))
 
 
 (defroutes app-routes
   "Webapp API"
   (GET "/"
-       {cookies :cookies}
-       (views/dashboard (:value (get cookies "authtoken"))))
-  (GET "/dashboard"
-       {cookies :cookies}
-       (views/dashboard (:value (get cookies "authtoken"))))
+       []
+       (views/home-page))
+  (GET "/login"
+       {params :params}
+       (login-user (:username params) (:password params)))
   (GET "/new-user"
        []
        (views/new-user))
   (POST "/new-user"
         {params :params}
         (create-new-user (:username params) (:password params)))
-  (GET "/login"
+  (GET "/logout"
        []
-       (views/login-page))
-  (POST "/login"
-       {params :params}
-       (login-user (:username params) (:password params)))
+       (logout-user))
+  (GET "/dashboard"
+       {cookies :cookies}
+       (views/dashboard (:value (get cookies "authtoken"))))
   (route/not-found "Not Found"))
 
 

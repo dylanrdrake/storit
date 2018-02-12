@@ -12,12 +12,12 @@
    (page/include-css "/css/styles.css")])
 
 
-(defn login-page
+(defn home-page
   [& messages]
   (page/html5
    (gen-page-head "Storit")
    [:h1 "Storit"]
-   (form/form-to [:post "/login"]
+   (form/form-to [:get "/login"]
                  [:input {:name "username"}]
                  [:br]
                  [:input {:name "password"
@@ -51,4 +51,5 @@
      (gen-page-head "Storit")
      [:h1 "Dashboard"]
      [:h3 userName]
+     [:a {:href "/logout"} "Logout"]
      [:p tables])))
