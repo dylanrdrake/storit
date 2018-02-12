@@ -148,5 +148,3 @@
   (let [expires (:expires (get-token token))
         current-date (java.util.Date.)]
     (neg? (compare current-date expires))))
-
-

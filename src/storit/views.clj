@@ -18,10 +18,17 @@
    (gen-page-head "Storit")
    [:h1 "Storit"]
    (form/form-to [:get "/login"]
-                 [:input {:name "username"}]
+                 [:input {:name "username"
+                          :type "username"
+                          :placeholder "Username"}]
                  [:br]
                  [:input {:name "password"
-                         :type "password"}]
+                          :type "password"
+                          :placeholder "Password"}]
+                 [:br]
+                 [:br]
+                 [:input {:type "checkbox"} "Keep me logged in."]
+                 [:br]
                  [:br]
                  [:button {:type "Submit"} "Login"])
    [:p (first messages)]
@@ -49,7 +56,6 @@
         tables (db/get-all-user-tables token)]
     (page/html5
      (gen-page-head "Storit")
-     [:h1 "Dashboard"]
-     [:h3 userName]
+     [:h1 (str "Storit/dashboard/" userName)]
      [:a {:href "/logout"} "Logout"]
      [:p tables])))

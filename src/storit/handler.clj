@@ -9,7 +9,7 @@
             [ring.middleware.defaults :refer [wrap-defaults
                                               site-defaults]]))
 
-(defn set-token-cookie
+(defn set-auth-token
   "Accepts a response map and returns
   response map with authtoken cookie."
   [response token]
@@ -25,7 +25,7 @@
         passhash (hs/encrypt password)]
     (if exists
       (views/new-user "Username already in use.")
-      (set-token-cookie (resp/redirect "/dashboard")
+      (set-auth-token (resp/redirect "/dashboard")
                         (:token (db/create-user userName passhash))))))
 
 
@@ -54,8 +54,16 @@
   [userName password]
   (if (auth-creds userName password)
     (let [newtoken (:token (db/new-token userName))]
-      (set-token-cookie (resp/redirect "/dashboard") newtoken))
+      (set-auth-token (resp/redirect "/dashboard") newtoken))
     (views/home-page "Incorrect username or password.")))
+
+
+(defn create-table
+  "Called from API route."
+  [tablename token]
+  (let [username (db/userid-by-token token)
+        tableid (db/create-user-table tablename username)]
+    (db/get-user-table tableid)))
 
 
 (defn wrap-logged-in?
@@ -79,7 +87,7 @@
 
 
 (defroutes app-routes
-  "Webapp API"
+  "Webapp"
   (GET "/"
        []
        (views/home-page))
@@ -103,8 +111,8 @@
 
 (def app
   (-> app-routes
-      wrap-logged-in?
+      (wrap-routes wrap-logged-in?)
       wrap-cookies
       (wrap-defaults (assoc-in site-defaults
-                               [:security :anti-forgery]
-                               false))))
+                                [:security :anti-forgery]
+                                false))))

@@ -1,12 +1,14 @@
 body {
-  background-color: Cornsilk;
-}
-
-#header-links {
-  background-color: BurlyWood;
-  padding: 10px;
+  font-family: Courier;
+  text-align: center;
+  background-color: #444444;
+  color: #ffffff;
 }
 
 h1 {
-  color: CornflowerBlue;
+  text-align: left;
+}
+
+a,a:visited {
+  color: #ffffff;
 }
