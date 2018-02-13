@@ -17,6 +17,11 @@
                           [:expires "datetime"]]))
 
     (jdbc/db-do-commands conn
+                         (jdbc/create-table-ddl :apitokens
+                         [[:apitoken "varchar primary key"]
+                         [:userName "varchar"]]))
+
+    (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :tables
                          [[:id "int primary key auto_increment"]
                           [:userName "varchar"]

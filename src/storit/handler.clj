@@ -26,7 +26,13 @@
     (if exists
       (views/new-user "Username already in use.")
       (set-auth-token (resp/redirect "/dashboard")
-                        (:token (db/create-user userName passhash))))))
+                      (:token (db/create-user userName passhash))))))
+
+(defn create-api-token
+  [token]
+  (let [userName (db/userid-by-token token)
+        newtoken (db/new-api-token userName)]
+    (resp/redirect "/account")))
 
 
 (defn auth-creds
@@ -54,7 +60,7 @@
   [userName password]
   (if (auth-creds userName password)
     (let [newtoken (:token (db/new-token userName))]
-      (set-auth-token (resp/redirect "/dashboard") newtoken))
+      (set-auth-token (resp/redirect "/") newtoken))
     (views/home-page "Incorrect username or password.")))
 
 
@@ -66,32 +72,40 @@
     (db/get-user-table tableid)))
 
 
+(defn home-page
+  [token]
+  (let [loggedin? (db/token-active? token)
+        userName (db/userid-by-token token)]
+    (if loggedin?
+      (views/home-page-loggedin userName)
+      (views/home-page))))
+
+
 (defn wrap-logged-in?
   "Middleware that checks if a token
-  exists and if it is active."
+  exists and if it is active if trying
+  to access a uri that requires athentication."
   [handler]
   (fn [request]
     (let [uri (:uri request)
-          token (:value (get (:cookies request) "authtoken"))]
-      (if (nil? token)
-        (if (= uri "/dashboard")
-          (resp/redirect "/")
-          (handler request))
-        (if (db/token-active? token)
-          (if (or (= uri "/dashboard") (= uri "/logout"))
-            (handler request)
-            (resp/redirect "/dashboard"))
-          (if (= uri "/dashboard")
-            (resp/redirect "/")
-            (handler request)))))))
+          token (:value (get (:cookies request) "authtoken"))
+          loggedin? (db/token-active? token)
+          protected {"/dashboard" "" "/account" ""
+                     "/logout" "" "/createuthtoken" ""}]
+      (if (and (not loggedin?) (contains? protected uri))
+        (resp/redirect "/login")
+        (handler request)))))
 
 
 (defroutes app-routes
   "Webapp"
   (GET "/"
-       []
-       (views/home-page))
+       {cookies :cookies}
+       (home-page (:value (get cookies "authtoken"))))
   (GET "/login"
+       []
+       (views/login-page))
+  (GET "/logmein"
        {params :params}
        (login-user (:username params) (:password params)))
   (GET "/new-user"
@@ -106,6 +120,12 @@
   (GET "/dashboard"
        {cookies :cookies}
        (views/dashboard (:value (get cookies "authtoken"))))
+  (GET "/account"
+       {cookies :cookies}
+       (views/account-page (:value (get cookies "authtoken"))))
+  (GET "/create-api-token"
+       {cookies :cookies}
+       (create-api-token (:value (get cookies "authtoken"))))
   (route/not-found "Not Found"))
 
 
