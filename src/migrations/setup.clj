@@ -14,7 +14,8 @@
                          (jdbc/create-table-ddl :tokens
                          [[:token "varchar primary key"]
                           [:userName "varchar"]
-                          [:expires "datetime"]]))
+                          [:expires "datetime"]
+                          [:use "varchar"]]))
 
     (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :tables
