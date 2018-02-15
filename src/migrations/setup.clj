@@ -6,27 +6,27 @@
   (jdbc/with-db-connection [conn {:dbtype "h2" :dbname "./storit"}]
     (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :users
-                         [[:userName "varchar primary key"]
+                         [[:username "varchar primary key"]
                           [:passhash "varchar"]
                           [:email "varchar"]]))
 
     (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :tokens
                          [[:token "varchar primary key"]
-                          [:userName "varchar"]
+                          [:username "varchar"]
                           [:expires "datetime"]
                           [:use "varchar"]]))
 
     (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :tables
                          [[:id "int primary key auto_increment"]
-                          [:userName "varchar"]
-                          [:tableName "varchar"]]))
+                          [:username "varchar"]
+                          [:tablename "varchar"]]))
 
     (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :items
                          [[:id "int primary key auto_increment"]
-                          [:tableId "int"]
+                          [:tableid "int"]
                           [:sku "varchar"]
                           [:name "varchar"]
                           [:inventory "int"]]))))

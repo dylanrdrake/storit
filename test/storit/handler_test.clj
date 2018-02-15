@@ -3,7 +3,7 @@
             [ring.mock.request :as mock]
             [storit.handler :refer :all]))
 
-(deftest test-app
+(deftest web-routes
   (testing "GET /"
     (let [response (app (mock/request :get "/"))]
       (is (= (:status response) 200))))
@@ -19,7 +19,7 @@
                                        :password "testpass"}))]
       (is (= (:status response) 200))))
 
-  (testing "POST /login"
+  (testing "GET /login"
     (let [response (app (mock/request :post
                                       "/login"
                                       {:username "testing"

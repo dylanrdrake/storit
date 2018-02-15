@@ -13,7 +13,7 @@
     (first (vals (first results)))))
 
 
-(defn create-user-table
+(defn create-storit-table
   "Accepts a userName string, creates a
   new TABLES table record, returns a tableId int"
   [userName tablename]
@@ -23,7 +23,7 @@
     (first (vals (first results)))))
 
 
-(defn get-user-table
+(defn get-storit-table
   "Accepts a tableId int and returns
   a clojure list of all items from that table."
   [tableid]
@@ -31,6 +31,17 @@
                             ["select * from items where tableid=?"
                              tableid])]
     results))
+
+
+(defn storit-table-exists?
+  "Accepts username and table name strings
+  and returns true if storit table by that
+  name exists and false if not."
+  [userName tablename]
+  (let [results (jdbc/query db-spec
+                            ["select * from tables where username=? and tablename=?"
+                             userName tablename])]
+    (not (nil? (first results)))))
 
 
 (defn userid-by-token
@@ -54,7 +65,7 @@
     results))
 
 
-(defn delete-user-table
+(defn delete-storit-table
   "Accepts a tableId int, deletes table
   record from tables, return int of affected rows."
   [tableId]
@@ -84,6 +95,8 @@
 
 
 (defn get-all-tokens
+  "Accepts a username string and
+  returns all token records for that user"
   [userName]
   (let [results (jdbc/query db-spec
                             ["select * from tokens where username=?"

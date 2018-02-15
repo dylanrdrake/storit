@@ -25,6 +25,8 @@
                       (:token (db/create-user userName passhash))))))
 
 (defn create-api-token
+  "Accepts an auth token and creates
+  a new API token record for that user."
   [token]
   (let [userName (db/userid-by-token token)
         newtoken (db/new-token userName "api")]
@@ -60,15 +62,9 @@
     (views/home-page "Incorrect username or password.")))
 
 
-(defn create-table
-  "Called from API route."
-  [tablename token]
-  (let [username (db/userid-by-token token)
-        tableid (db/create-user-table tablename username)]
-    (db/get-user-table tableid)))
-
-
 (defn home-page
+  "Accepts an auth token and checks if user
+  is logged in and returns the correct home page."
   [token]
   (let [loggedin? (db/token-active? token)
         userName (db/userid-by-token token)]

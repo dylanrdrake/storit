@@ -63,7 +63,7 @@
   (page/html5
    (gen-page-head "Storit" "styles.css")
    [:h1 "Create New User"]
-   (form/form-to [:post "/new-user"]
+   (form/form-to [:get "/create-new-user"]
                  [:input {:name "username"}]
                  [:br]
                  [:input {:name "password"

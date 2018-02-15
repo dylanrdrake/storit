@@ -31,8 +31,7 @@
     (let [uri (:uri request)
           token (:value (get (:cookies request) "authtoken"))
           loggedin? (db/token-active? token)
-          protected {"/dashboard" "" "/account" ""
-                     "/logout" "" "/createuthtoken" ""}]
+          protected #{"/dashboard" "/account" "/logout" "/createuthtoken"}]
       (if (and (not loggedin?) (contains? protected uri))
         (resp/redirect "/login")
         (handler request)))))
@@ -52,10 +51,10 @@
   (GET "/new-user"
        []
        (views/new-user))
-  (POST "/new-user"
+  (GET "/create-new-user"
         {params :params}
         (web/create-new-user (:username params) (:password params)))
-  (GET "/logout"
+  (GET "/:username/logout"
        []
        (web/logout-user))
   (GET "/dashboard"
@@ -83,6 +82,7 @@
    (-> app-routes
        (wrap-routes wrap-logged-in?)
        wrap-cookies
-       (wrap-defaults (assoc-in site-defaults
-                                [:security :anti-forgery]
-                                false)))))
+       (wrap-defaults site-defaults))))
+;       (wrap-defaults (assoc-in site-defaults
+;                                [:security :anti-forgery]
+;                                false)))))
