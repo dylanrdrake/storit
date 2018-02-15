@@ -75,7 +75,7 @@
 (defn account-page
   [token]
   (let [userName (db/userid-by-token token)
-        tokens (db/get-all-user-api-tokens userName)]
+        tokens (db/get-all-user-tokens userName)]
     (page/html5
      (gen-page-head "Storit")
      [:h1 (str userName "/account")]

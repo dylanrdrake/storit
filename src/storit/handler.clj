@@ -31,7 +31,7 @@
 (defn create-api-token
   [token]
   (let [userName (db/userid-by-token token)
-        newtoken (db/new-api-token userName)]
+        newtoken (db/new-token userName "api")]
     (resp/redirect "/account")))
 
 
@@ -79,6 +79,19 @@
     (if loggedin?
       (views/home-page-loggedin userName)
       (views/home-page))))
+
+
+(defn wrap-api-auth?
+  "Middleware that checks if an API
+  auth token was passed with the request."
+  [handler]
+  (fn [request]
+    (let [uri (:uri request)
+          token (:authorization (:headers request))
+          authed? (db/token-active? token)]
+      (if authed?
+        (handler request)
+        {:status 400 :body "No authorization present."}))))
 
 
 (defn wrap-logged-in?
@@ -129,10 +142,19 @@
   (route/not-found "Not Found"))
 
 
+(defroutes api-routes
+  (GET "/api"
+       []
+       "API"))
+
+
 (def app
-  (-> app-routes
-      (wrap-routes wrap-logged-in?)
-      wrap-cookies
-      (wrap-defaults (assoc-in site-defaults
+  (routes
+   (-> api-routes
+       (wrap-routes wrap-api-auth?))
+   (-> app-routes
+       (wrap-routes wrap-logged-in?)
+       wrap-cookies
+       (wrap-defaults (assoc-in site-defaults
                                 [:security :anti-forgery]
-                                false))))
+                                false)))))

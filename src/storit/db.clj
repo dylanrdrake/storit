@@ -73,14 +73,6 @@
     (not (nil? (first results)))))
 
 
-(defn api-token-exists?
-  [userName]
-  (let [results (jdbc/query db-spec
-                            ["select * from apitokens where username=?"
-                             userName])]
-    (not (nil? (first results)))))
-
-
 (defn get-token
   "Accepts a token string and
   returns all fields for that record."
@@ -91,26 +83,10 @@
     (first results)))
 
 
-(defn get-api-token
-  [token]
-  (let [results (jdbc/query db-spec
-                            ["select * from apitokens where apitoken=?"
-                             token])]
-    (first results)))
-
-
 (defn get-all-user-tokens
   [userName]
   (let [results (jdbc/query db-spec
                             ["select * from tokens where username=?"
-                             userName])]
-    results))
-
-
-(defn get-all-user-api-tokens
-  [userName]
-  (let [results (jdbc/query db-spec
-                            ["select * from apitokens where username=?"
                              userName])]
     results))
 
@@ -128,22 +104,10 @@
       token)))
 
 
-(defn create-api-token
-  []
-  (let [nums (map char (range 48 58))
-        alphas (map char (range 97 123))
-        alphanum (concat nums alphas)
-        token (reduce str
-                      (take 24 (repeatedly #(rand-nth alphanum))))]
-    (if (api-token-exists? token)
-      (create-api-token)
-      token)))
-
-
 (defn new-token
   "Accepts a userName string and
   inserts a new token record in TOKENS."
-  [userName]
+  [userName & uses]
   (let [newtoken (create-token)
         expires (java.util.Date. (+ (* 14 86400 1000)
                                     (.getTime (java.util.Date.))))
@@ -151,25 +115,9 @@
                               :tokens
                               {:token newtoken
                                :username userName
-                               :expires expires})]
+                               :expires expires
+                               :use (first uses)})]
     (get-token newtoken)))
-
-
-(defn new-api-token
-  [userName]
-  (let [newtoken (create-api-token)
-        oldexists? (api-token-exists? userName)]
-    (if oldexists?
-      (jdbc/update! db-spec
-                    :apitokens
-                    {:apitoken newtoken
-                    :username userName}
-                    ["username=?" userName])
-      (jdbc/insert! db-spec
-                    :apitokens
-                    {:apitoken newtoken
-                     :username userName}))
-    (get-api-token newtoken)))
 
 
 (defn get-user
