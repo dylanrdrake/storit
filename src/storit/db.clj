@@ -83,7 +83,7 @@
     (first results)))
 
 
-(defn get-all-user-tokens
+(defn get-all-tokens
   [userName]
   (let [results (jdbc/query db-spec
                             ["select * from tokens where username=?"
