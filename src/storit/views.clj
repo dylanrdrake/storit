@@ -6,16 +6,17 @@
 
 
 (defn gen-page-head
-  [title]
+  [title & resources]
   [:head
    [:title title]
-   (page/include-css "/css/styles.css")])
+   (page/include-css (str "/css/" (first resources)))
+   (page/include-js (str "/js/" (second resources)))])
 
 
 (defn home-page-loggedin
   [userName]
   (page/html5
-    (gen-page-head "Storit")
+    (gen-page-head "Storit" "styles.css")
     [:h1 (str userName "/")]
     [:a {:href "/dashboard"} "Dashboard"]
     [:span "&nbsp"]
@@ -27,7 +28,7 @@
 (defn home-page
   []
   (page/html5
-   (gen-page-head "Storit")
+   (gen-page-head "Storit" "styles.css")
    [:h1 "Storit"]
    [:a {:href "/login"} "Login"]
    [:span "&nbsp"]
@@ -37,7 +38,7 @@
 (defn login-page
   [& messages]
   (page/html5
-   (gen-page-head "Storit")
+   (gen-page-head "Storit" "styles.css")
    [:h1 "Storit"]
    (form/form-to [:get "/logmein"]
                  [:input {:name "username"
@@ -60,7 +61,7 @@
 (defn new-user
   [& messages]
   (page/html5
-   (gen-page-head "Storit")
+   (gen-page-head "Storit" "styles.css")
    [:h1 "Create New User"]
    (form/form-to [:post "/new-user"]
                  [:input {:name "username"}]
@@ -77,7 +78,7 @@
   (let [userName (db/userid-by-token token)
         tokens (db/get-all-tokens userName)]
     (page/html5
-     (gen-page-head "Storit")
+     (gen-page-head "Storit" "styles.css")
      [:h1 (str userName "/account")]
      [:p tokens]
      [:a {:href "/create-api-token"}
@@ -89,7 +90,7 @@
   (let [userName (db/userid-by-token token)
         tables (db/get-all-user-tables token)]
     (page/html5
-     (gen-page-head "Storit")
+     (gen-page-head "Storit" "styles.css" "dashboard.js")
      [:h1 (str userName "/dashboard")]
      [:a {:href "/account"} "Account"]
      [:br]

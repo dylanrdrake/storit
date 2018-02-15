@@ -21,7 +21,7 @@
         passhash (hs/encrypt password)]
     (if exists
       (views/new-user "Username already in use.")
-      (set-auth-token (resp/redirect "/dashboard")
+      (set-auth-token (resp/redirect "/")
                       (:token (db/create-user userName passhash))))))
 
 (defn create-api-token

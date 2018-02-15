@@ -19,7 +19,7 @@
           authed? (db/token-active? token)]
       (if authed?
         (handler request)
-        {:status 400 :body "No authorization present."}))))
+        {:status 400 :body "No authorization present. Login to Storit and create an API token."}))))
 
 
 (defn wrap-logged-in?

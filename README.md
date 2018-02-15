@@ -4,10 +4,10 @@ A light, simple persistent inventory tracker that stores data in an h2 instance 
 
 
 ## Prerequisites
+Java installed (Clojures runs on the JVM)
 
-You will need [Leiningen][] 2.0.0 or above installed and Java (Clojures runs on the JVM).
+[Leiningen](https://leiningen.org) 2.0.0 or above installed.
 
-[leiningen]: https://github.com/technomancy/leiningen
 
 ## Run Locally
 
