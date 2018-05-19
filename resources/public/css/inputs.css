@@ -1,0 +1,19 @@
+input {
+  padding: 1%;
+  font-size: 30px;
+  border-radius: 10px;
+  border: none;
+}
+input:focus {
+  background-color: #fff;
+}
+
+button {
+  color: #333333;
+  font-size: 30px;
+  font-family: Courier;
+  border-radius: 10px;
+  border: none;
+  background-color: white;
+  cursor: pointer;
+}

@@ -1,0 +1,12 @@
+body {
+  font-family: Courier;
+  background-color: #333333;
+  color: #ffffff;
+}
+
+a {
+  color: #fff;
+}
+a:visited {
+  color: inherit;
+}

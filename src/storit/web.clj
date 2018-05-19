@@ -25,15 +25,6 @@
                       (:token (db/create-user userName passhash))))))
 
 
-(defn create-api-token
-  "Accepts an auth token and creates
-  a new API token record for that user."
-  [token]
-  (let [userName (db/userid-by-token token)
-        newtoken (db/new-token userName "api")]
-    (resp/redirect "/dashboard/settings")))
-
-
 (defn auth-creds
   "Accepts userName and password
   strings, checks against db values
@@ -89,3 +80,19 @@
   dashboard's settings view."
   [token]
   (views/dashboard-page token (views/gen-sett-cont token)))
+
+
+(defn dash-new-table
+  [token]
+  (views/dashboard-page token (views/gen-new-table)))
+
+
+(defn create-table
+  [token tablename]
+  (let [username(db/userid-by-token token)
+        exists? (db/storit-table-exists? username tablename)
+        newtableid (db/create-storit-table username tablename)]
+    (if exists?
+      (views/dashboard-page token
+                            (views/gen-new-table "Already exists!"))
+      (resp/redirect (str "/dashboard/table/" newtableid)))))

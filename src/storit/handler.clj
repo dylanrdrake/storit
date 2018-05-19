@@ -1,6 +1,7 @@
 (ns storit.handler
   (:require [storit.db :as db]
             [storit.web :as web]
+            [storit.api :as api]
             [storit.views :as views]
             [compojure.core :refer :all]
             [compojure.route :as route]
@@ -32,8 +33,7 @@
     (let [uri-root (second (str/split (:uri request) #"/"))
           token (:value (get (:cookies request) "authtoken"))
           loggedin? (db/token-exists? token)
-          protected #{"dashboard" "settings"
-                      "logout" "createapitoken"}]
+          protected #{"dashboard" "settings" "logout"}]
       (if (and (not loggedin?) (contains? protected uri-root))
         (resp/redirect "/")
         (handler request)))))
@@ -66,16 +66,24 @@
   (GET "/dashboard/settings"
        {cookies :cookies}
        (web/dash-settings (:value (get cookies "authtoken"))))
-  (GET "/createapitoken"
+  (GET "/dashboard/new-table"
        {cookies :cookies}
-       (web/create-api-token (:value (get cookies "authtoken"))))
+       (web/dash-new-table (:value (get cookies "authtoken"))))
+  (GET "/dashboard/create-table"
+       {cookies :cookies params :params}
+       (web/create-table (:value (get cookies "authtoken"))
+                         (:tablename params)))
   (route/not-found "Not Found"))
 
 
 (defroutes api-routes
-  (GET "/api"
-       []
-       "API"))
+  (GET "/api/create-api-token"
+       {headers :headers}
+       (api/create-api-token (:value (get headers "Authorization"))))
+  (GET "/api/create-table"
+       {headers :headers params :params}
+       (api/create-table (:tablename params)
+                         (:value (get headers "Authorization")))))
 
 
 (def app

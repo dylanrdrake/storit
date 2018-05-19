@@ -1,0 +1,12 @@
+body {
+  text-align: center;
+}
+
+
+#logo {
+  font-size: 7vw;
+}
+
+.login-btn {
+  background-color: inherit;
+}

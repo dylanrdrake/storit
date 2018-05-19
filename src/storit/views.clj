@@ -1,6 +1,7 @@
 (ns storit.views
   (:require [storit.db :as db]
             [clojure.string :as string]
+            [hiccup.core :as core]
             [hiccup.page :as page]
             [hiccup.form :as form]))
 
@@ -20,7 +21,7 @@
 (defn home-page
   [& messages]
   (page/html5
-   (gen-page-head "Storit" "styles.css")
+   (gen-page-head "Storit" "global.css" "home.css" "inputs.css")
    [:div {:id "logo-login-container"}
     [:h1 {:id "logo"} "Storit"]
     (form/form-to {:id "login-form"}
@@ -49,7 +50,7 @@
 (defn new-user-page
   [& messages]
   (page/html5
-   (gen-page-head "Storit" "styles.css")
+   (gen-page-head "Storit" "global.css" "home.css" "inputs.css")
    [:div {:id "create-user-container"}
     [:h1 "Create New User"]
     (form/form-to [:get "/create-new-user"]
@@ -89,14 +90,31 @@
   [token]
   (let [userName (db/userid-by-token token)
         tokens (db/get-all-tokens userName)]
-    [:p tokens]))
-;    [:a {:href "/create-api-token"}
-;     [:button "Create Auth Token"]]))
+    (core/html
+      [:p tokens]
+      [:a {:href "/create-api-token"}
+       [:button "Create Auth Token"]])))
 
 
 (defn gen-tbl-cont
   [rows]
   [:div rows])
+
+
+(defn gen-new-table
+  ([]
+  (gen-new-table nil))
+  ([message]
+    (core/html
+      [:h1 "Create New Table"]
+      (form/form-to [:get "/dashboard/create-table"]
+                    [:input {:name "tablename"
+                            :size "20"
+                            :placeholder "table name"}]
+                    [:br]
+                    [:br]
+                    [:button {:type "Submit"} "Create"])
+      [:p message])))
 
 
 (defn dashboard-page
@@ -108,8 +126,8 @@
    (let [userName (db/userid-by-token token)
          tables (db/get-all-user-tables token)]
      (page/html5
-      (gen-page-head "Storit" "styles.css"
-                     "dashboard.css" "dashboard.js")
+      (gen-page-head "Storit" "global.css"
+                     "dashboard.css" "inputs.css" "dashboard.js")
       [:div {:id "container"}
        [:img {:src "/images/hamburger.png"
               :id "hamburger"}]
@@ -128,7 +146,9 @@
         ; tables
         [:div {:id "table-list"}
          ; new table btn
-         [:a {:href "/" :class "tbl-list-link" :title "New Table"}
+         [:a {:href "/dashboard/new-table"
+              :class "tbl-list-link"
+              :title "New Table"}
           [:div {:class "tbl-list-div"}
            [:img {:src "/images/new-table32.png" :id "new-tbl-img"}]]]
          ; list of user's tables
