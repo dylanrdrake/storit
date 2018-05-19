@@ -1,0 +1,94 @@
+body {
+  margin: 0px;
+}
+
+#container {
+  display: flex;
+  height: 100vh;
+}
+
+
+#side-bar {
+  background-color: #333333;
+  max-width: 20%;
+}
+
+#contents {
+  background-color: #444444;
+  max-width: 80%;
+  width: 100%;
+}
+
+
+#username {
+  padding-top: 2%;
+  text-align: center;
+  overflow: hidden;
+  font-size: 1.5vw;
+  font-weight: bold;
+}
+
+.logout-sett {
+  display: inline;
+}
+
+#logout-btn {
+  margin-left: 5%;
+}
+
+#sett-btn {
+  float: right;
+  margin-right: 5%;
+}
+
+
+#table-list {
+  margin-top: 10%;
+}
+
+.tbl-list-link {
+  text-align: center;
+  text-decoration: none;
+}
+.tbl-list-div {
+  font-size: 2vw;
+  padding: 1%;
+  border-bottom: solid 1px #444444;
+}
+.tbl-list-div:hover {
+  background-color: #444444;
+}
+
+.active-tbl {
+  color: #fff;
+  background-color: #444444;
+}
+
+
+
+#hamburger {
+  position: absolute;
+  top: 2%;
+  left: 2%;
+  display: none;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 800px) {
+  #hamburger {
+    display: block;
+  }
+
+  #side-bar {
+    display: none;
+    max-width: 100%;
+    width: 100%;
+    font-size: 5vw;
+  }
+
+  #contents {
+    padding-top: 10%;
+    max-width: 100%;
+    width: 100%;
+  }
+}

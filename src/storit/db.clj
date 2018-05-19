@@ -111,24 +111,21 @@
         alphas (map char (range 97 123))
         alphanum (concat nums alphas)
         token (reduce str
-                      (take 24 (repeatedly #(rand-nth alphanum))))]
+                      (take 36 (repeatedly #(rand-nth alphanum))))]
     (if (token-exists? token)
       (create-token)
       token)))
 
 
 (defn new-token
-  "Accepts a userName string and
+  "Accepts a userName string and token use and
   inserts a new token record in TOKENS."
   [userName & uses]
   (let [newtoken (create-token)
-        expires (java.util.Date. (+ (* 14 86400 1000)
-                                    (.getTime (java.util.Date.))))
         results (jdbc/insert! db-spec
                               :tokens
                               {:token newtoken
                                :username userName
-                               :expires expires
                                :use (first uses)})]
     (get-token newtoken)))
 
@@ -145,7 +142,7 @@
 
 (defn create-user
   "Accepts a userName string and passhash,
-  class new-token, inserts new user in USERS
+  cals new-token, inserts new user in USERS
   table, returns the user map including new token."
   [userName passhash]
   (let [newtoken (new-token userName)
@@ -167,7 +164,8 @@
 
 (defn token-active?
   "Accepts token string and returns true
-  if token is not expired and false if it is."
+  if token is not expired and false if it is.
+  NOT IN USE."
   [token]
   (let [expires (:expires (get-token token))
         current-date (java.util.Date.)]

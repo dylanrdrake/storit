@@ -1,14 +1,43 @@
 body {
   font-family: Courier;
+  background-color: #333333;
+  color: #ffffff;
+}
+
+a:visited {
+  color: inherit;
+}
+
+
+#logo-login-container, #create-user-container {
+  position: absolute;
+  top: 20%;
+  left: 38%;
   text-align: center;
-  background-color: #444444;
-  color: #ffffff;
 }
 
-h1 {
-  text-align: left;
+#logo {
+  font-size: 7vh;
 }
 
-a,a:visited {
-  color: #ffffff;
+input {
+  padding: 1%;
+  font-size: 30px;
+  border-radius: 10px;
+  border: none;
+}
+input:focus {
+  background-color: #fff;
+}
+
+button {
+  font-size: 30px;
+  border-radius: 10px;
+  border: none;
+  background-color: white;
+  cursor: pointer;
+}
+
+.login-btn {
+  background-color: inherit;
 }

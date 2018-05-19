@@ -20,9 +20,10 @@
   (let [exists (db/user-exists? userName)
         passhash (hs/encrypt password)]
     (if exists
-      (views/new-user "Username already in use.")
+      (views/new-user-page "Username already in use.")
       (set-auth-token (resp/redirect "/")
                       (:token (db/create-user userName passhash))))))
+
 
 (defn create-api-token
   "Accepts an auth token and creates
@@ -30,13 +31,13 @@
   [token]
   (let [userName (db/userid-by-token token)
         newtoken (db/new-token userName "api")]
-    (resp/redirect "/account")))
+    (resp/redirect "/dashboard/settings")))
 
 
 (defn auth-creds
   "Accepts userName and password
   strings, checks against db values
-  and returns boolean."
+  and returns true if matched, false if not."
   [userName password]
   (let [user (db/get-user userName)]
     (if user
@@ -46,28 +47,45 @@
 
 
 (defn logout-user
-  "Returns response with no authtoken."
+  "Returns response with cleared authtoken."
   []
   (assoc-in (resp/redirect "/") [:cookies :authtoken] "kill"))
 
 
 (defn login-user
   "Accepts username and password
-  strings and returns dashboard if
-  true, login-page if not."
+  strings and returns home page if
+  true, home-page if not."
   [userName password]
   (if (auth-creds userName password)
     (let [newtoken (:token (db/new-token userName))]
-      (set-auth-token (resp/redirect "/") newtoken))
+      (set-auth-token (resp/redirect "/dashboard") newtoken))
     (views/home-page "Incorrect username or password.")))
 
 
-(defn home-page
+(defn home
   "Accepts an auth token and checks if user
   is logged in and returns the correct home page."
   [token]
-  (let [loggedin? (db/token-active? token)
+  (let [loggedin? (db/token-exists? token)
         userName (db/userid-by-token token)]
     (if loggedin?
-      (views/home-page-loggedin userName)
+      (resp/redirect "/dashboard")
       (views/home-page))))
+
+
+(defn dash-table
+  "Accepts an auth token and a table ID
+  and returns the dashboard's table view."
+  [token tableid]
+  (let [table-rows (db/get-storit-table tableid)]
+    (views/dashboard-page token
+                          (views/gen-tbl-cont table-rows)
+                          tableid)))
+
+
+(defn dash-settings
+  "Accepts an auth token and returns the
+  dashboard's settings view."
+  [token]
+  (views/dashboard-page token (views/gen-sett-cont token)))
