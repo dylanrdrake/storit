@@ -83,7 +83,7 @@
 
 (defn gen-dash-home
   []
-  [:div "Home"])
+  (core/html "Home"))
 
 
 (defn gen-sett-cont
@@ -96,9 +96,21 @@
        [:button "Create Auth Token"]])))
 
 
-(defn gen-tbl-cont
+(defn gen-tbl-ctrl-bar
+  []
+  (core/html
+   [:div {:id "tbl-ctrl-bar"}
+    [:div {:class "tbl-ctrl-div" :id "add-item-ctrl-div"}
+     [:img {:src "/images/addgreen32.png" :id "add-item-img"}]]
+    [:div {:class "tbl-ctrl-div" :id "search-tbl-div"}
+     [:input {:type "text" :size "10" :placeholder "SKU, Name"
+              :id "search-tbl-input"}]
+     [:img {:src "/images/search32.png" :id "search-tbl-img"}]]]))
+
+
+(defn gen-tbl-view
   [rows]
-  [:div rows])
+  (gen-tbl-ctrl-bar))
 
 
 (defn gen-new-table
@@ -130,7 +142,7 @@
                      "dashboard.css" "inputs.css" "dashboard.js")
       [:div {:id "container"}
        [:img {:src "/images/hamburger.png"
-              :id "hamburger"}]
+              :id "hamburger" :onclick "showMobileSideNav()"}]
 
        ; SIDE BAR
        [:div {:id "side-bar"}
@@ -149,7 +161,7 @@
          [:a {:href "/dashboard/new-table"
               :class "tbl-list-link"
               :title "New Table"}
-          [:div {:class "tbl-list-div"}
+          [:div {:class "tbl-list-div" :id "new-tbl-div"}
            [:img {:src "/images/new-table32.png" :id "new-tbl-img"}]]]
          ; list of user's tables
          (map #(gen-tbl-btn % active-tbl) tables)]]

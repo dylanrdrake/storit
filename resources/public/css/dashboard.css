@@ -9,15 +9,15 @@ body {
 
 
 #side-bar {
-  background-color: #333333;
+  background-color: #444444;
   max-width: 20%;
+  width: 20%;
 }
 
 #contents {
-  background-color: #444444;
+  background-color: #333333;
   max-width: 80%;
   width: 100%;
-  text-align: center;
 }
 
 
@@ -48,24 +48,74 @@ body {
 }
 
 .tbl-list-link {
-  text-align: center;
   text-decoration: none;
 }
 .tbl-list-div {
-  font-size: 2vw;
-  padding: 1%;
-  border-bottom: solid 1px #444444;
+  text-align: left;
+  font-size: 1.5vw;
+  padding: 5%;
+  border-bottom: solid 1px #333333;
 }
 .tbl-list-div:hover {
-  background-color: #444444;
+  background-color: #333333;
 }
 
 .active-tbl {
   color: #fff;
-  background-color: #444444;
+  background-color: #333333;
+  color: #8cf442;
+}
+
+#new-tbl-div {
+  text-align: center;
+}
+#new-tbl-img {
+  margin-top: 1vh;
 }
 
 
+#tbl-ctrl-bar {
+  margin: 1% auto;
+  height: 45px;
+  border-radius: 22px;
+  background-color: #444444;
+  width: 95%;
+}
+.tbl-ctrl-div {
+  height: 100%;
+}
+
+#add-item-ctrl-div {
+  float: left;
+  text-align: center;
+}
+#add-item-img {
+  margin-left: 6px;
+  margin-top: 6px;
+}
+
+#search-tbl-div {
+  float: right;
+  width: 300px;
+  border: solid 1px #444444;
+  text-align: center;
+  background-color: #333333;
+  height: 97%;
+  border-radius: 22px;
+}
+#search-tbl-img {
+  float: right;
+  margin-top: 5px;
+  margin-right: 9px;
+}
+#search-tbl-input {
+  background-color: #333333;
+  color: #fff;
+  border: none;
+}
+#search-tbl-input:focus {
+  outline-width: 0;
+}
 
 
 #hamburger {
@@ -85,12 +135,25 @@ body {
     display: none;
     max-width: 100%;
     width: 100%;
-    font-size: 5vw;
+    overflow: auto;
+  }
+  #username {
+    font-size: 4vh;
+  }
+  .tbl-list-div {
+    font-size: 4vh;
   }
 
   #contents {
-    padding-top: 10%;
     max-width: 100%;
     width: 100%;
+  }
+
+  #tbl-ctrl-bar {
+    position: absolute;
+    bottom: 1px;
+    width: 100%;
+    border-radius: 0;
+    margin: 0;
   }
 }

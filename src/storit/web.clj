@@ -71,7 +71,7 @@
   [token tableid]
   (let [table-rows (db/get-storit-table tableid)]
     (views/dashboard-page token
-                          (views/gen-tbl-cont table-rows)
+                          (views/gen-tbl-view table-rows)
                           tableid)))
 
 
@@ -90,9 +90,9 @@
 (defn create-table
   [token tablename]
   (let [username(db/userid-by-token token)
-        exists? (db/storit-table-exists? username tablename)
-        newtableid (db/create-storit-table username tablename)]
+        exists? (db/storit-table-exists? username tablename)]
     (if exists?
       (views/dashboard-page token
                             (views/gen-new-table "Already exists!"))
-      (resp/redirect (str "/dashboard/table/" newtableid)))))
+      (resp/redirect (str "/dashboard/table/"
+                          (db/create-storit-table username tablename))))))

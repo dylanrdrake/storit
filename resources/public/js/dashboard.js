@@ -12,3 +12,11 @@ function getAuthToken() {
     }
   }
 }
+
+
+function showMobileSideNav() {
+  document.getElementById("hamburger").style.display = "none";
+  document.getElementById("contents").style.display = "none";
+  document.getElementById("tbl-ctrl-bar").style.display = "none";
+  document.getElementById("side-bar").style.display = "block";
+}
