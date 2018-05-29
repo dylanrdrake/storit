@@ -18,16 +18,36 @@
                           [:use "varchar"]]))
 
     (jdbc/db-do-commands conn
+                         (jdbc/create-table-ddl :tableuser
+                         [[:tableid "int"]
+                          [:tablename "varchar"]
+                          [:username "varchar"]
+                          [:owner "boolean"]
+                          [:canedit "boolean"]]))
+
+    (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :tables
                          [[:id "int primary key auto_increment"]
-                          [:username "varchar"]
                           [:tablename "varchar"]]))
+
+    (jdbc/db-do-commands conn
+                         (jdbc/create-table-ddl :fields
+                         [[:id "int primary key auto_increment"]
+                          [:tableid "int"]
+                          [:fieldname "varchar"]
+                          [:fieldtype "varchar"]]))
 
     (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :items
                          [[:id "int primary key auto_increment"]
                           [:tableid "int"]
                           [:sku "varchar"]
-                          [:name "varchar"]
-                          [:inventory "int"]]))))
+                          [:name "varchar"]]))
 
+    (jdbc/db-do-commands conn
+                         (jdbc/create-table-ddl :tabledata
+                         [[:id "varchar primary key"]
+                          [:tableid "int"]
+                          [:itemid "int"]
+                          [:fieldid "int"]
+                          [:value "varchar"]]))))

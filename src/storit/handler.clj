@@ -40,7 +40,7 @@
 
 
 (defroutes app-routes
-  "Webapp"
+  "Webapp routes."
   (GET "/"
        {cookies :cookies}
        (web/home (:value (get cookies "authtoken"))))
@@ -59,10 +59,6 @@
   (GET "/dashboard"
        {cookies :cookies}
        (views/dashboard-page (:value (get cookies "authtoken"))))
-  (GET "/dashboard/table/:tableid"
-       {cookies :cookies uri :uri}
-       (web/dash-table (:value (get cookies "authtoken"))
-                       (last (str/split uri #"/"))))
   (GET "/dashboard/settings"
        {cookies :cookies}
        (web/dash-settings (:value (get cookies "authtoken"))))
@@ -73,6 +69,10 @@
        {cookies :cookies params :params}
        (web/create-table (:value (get cookies "authtoken"))
                          (:tablename params)))
+  (GET "/dashboard/table/:tableid"
+       {cookies :cookies uri :uri}
+       (web/dash-table (:value (get cookies "authtoken"))
+                       (last (str/split uri #"/"))))
   (route/not-found "Not Found"))
 
 
@@ -83,7 +83,11 @@
   (GET "/api/create-table"
        {headers :headers params :params}
        (api/create-table (:tablename params)
-                         (:value (get headers "Authorization")))))
+                         (:value (get headers "Authorization"))))
+  (GET "/api/delete-table"
+       {headers :headers params :params}
+       (api/delete-table (:value (get headers "Authorization"))
+                         (:tableid params))))
 
 
 (def app

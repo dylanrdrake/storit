@@ -71,11 +71,11 @@
 
 (defn gen-tbl-btn
   [table active]
-  [:a {:href (str "/dashboard/table/" (:id table))
+  [:a {:href (str "/dashboard/table/" (:tableid table))
        :class "tbl-list-link"
-       :id (str "table-" (:id table))}
+       :id (str "table-" (:tableid table))}
    [:div
-    (if (= active (str (:id table)))
+    (if (= active (str (:tableid table)))
       {:class "tbl-list-div active-tbl"}
       {:class "tbl-list-div"})
     (:tablename table)]])
@@ -88,7 +88,7 @@
 
 (defn gen-sett-cont
   [token]
-  (let [userName (db/userid-by-token token)
+  (let [userName (db/username-by-token token)
         tokens (db/get-all-tokens userName)]
     (core/html
       [:p tokens]
@@ -109,8 +109,10 @@
 
 
 (defn gen-tbl-view
-  [rows]
-  (gen-tbl-ctrl-bar))
+  [tabledata]
+  (core/html
+   (gen-tbl-ctrl-bar)
+   tabledata))
 
 
 (defn gen-new-table
@@ -135,7 +137,7 @@
   ([token content]
    (dashboard-page token content nil))
   ([token content active-tbl]
-   (let [userName (db/userid-by-token token)
+   (let [userName (db/username-by-token token)
          tables (db/get-all-user-tables token)]
      (page/html5
       (gen-page-head "Storit" "global.css"

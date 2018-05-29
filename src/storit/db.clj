@@ -4,47 +4,126 @@
 (def db-spec {:dbtype "h2" :dbname "./storit"})
 
 
-(defn create-table-item
-  "Takes a tableId int, creates a
-  new ITEMS table record, returns an itemId int"
-  [tableid]
+(defn create-table-user
+  [tableid tablename username owner canedit]
   (let [results (jdbc/insert! db-spec
-                              :items {:tableId tableid})]
-    (first (vals (first results)))))
+                              :tableuser {:tableid tableid
+                                          :tablename tablename
+                                          :username username
+                                          :owner owner
+                                          :canedit canedit})]
+    results))
 
 
 (defn create-storit-table
   "Accepts a userName string, creates a
-  new TABLES table record, returns a tableId int"
-  [userName tablename]
+  new TABLEUSER record with owner rights,
+  creates a new TABLE record and returns the tableid."
+  [username tablename]
   (let [results (jdbc/insert! db-spec
-                              :tables {:username userName
-                                       :tablename (name tablename)})]
+                              :tables {:tablename (name tablename)})
+        newtableid (first (vals (first results)))]
+    (create-table-user newtableid tablename username true true)
+    newtableid))
+
+
+(defn create-field
+  [tableid fieldname fieldtype]
+  (let [results (jdbc/insert! db-spec
+                              :fields {:tableid tableid
+                                       :fieldname fieldname
+                                       :fieldtype fieldtype})]
     (first (vals (first results)))))
 
 
-(defn get-storit-table
-  "Accepts a tableId int and returns
-  a clojure list of all items from that table."
+(defn create-table-item
+  "Takes a tableId int, creates a
+  new ITEMS table record, returns an itemId int"
+  [tableid sku name]
+  (let [results (jdbc/insert! db-spec
+                              :items {:tableid tableid
+                                      :sku sku
+                                      :name name})
+        newitemid (first (vals (first results)))]
+    newitemid))
+
+
+(defn update-data
+  ([tableid itemid fieldid data]
+   (let [results (jdbc/insert! db-spec
+                               :tabledata {:id (str itemid "-" fieldid)
+                                           :tableid tableid
+                                           :itemid itemid
+                                           :fieldid fieldid
+                                           :value data})]
+     (first (vals (first results)))))
+  ([dataid data]
+   (let [results (jdbc/update! db-spec
+                               :tabledata {:id dataid
+                                           :value data})])))
+
+
+(defn get-table-fields
   [tableid]
   (let [results (jdbc/query db-spec
-                            ["select * from items where tableid=?"
+                            ["select * from fields where tableid=?"
                              tableid])]
     results))
+
+
+(defn get-storit-table
+  "Accepts a tableId and returns a list
+  of maps for all items in the table."
+  [tableid]
+  (let [tablename (:tablename
+                   (first
+                    (jdbc/query
+                     db-spec
+                     ["select tablename from tables where id=?"
+                      tableid])))
+        items (jdbc/query db-spec
+                          ["select * from items where tableid=?"
+                           tableid])
+        fields (get-table-fields tableid)
+        data (jdbc/query db-spec
+                         ["select * from tabledata where tableid=?"
+                          tableid])
+        data-by-id (group-by :id data)]
+    {:tableid tableid
+     :tablename tablename
+     :fields fields
+     :items
+     (map (fn
+            [item]
+            (assoc item :data
+                   (map (fn
+                          [field]
+                          (let [fieldid (:id field)
+                                dataid (str "1" "-" fieldid)]
+                            (merge (select-keys field [:fieldtype
+                                                       :fieldname])
+                                   (select-keys
+                                    (first (get data-by-id dataid))
+                                    [:value]))))
+                        fields)))
+          items)}))
 
 
 (defn storit-table-exists?
   "Accepts username and table name strings
   and returns true if storit table by that
   name exists and false if not."
-  [userName tablename]
-  (let [results (jdbc/query db-spec
-                            ["select * from tables where username=? and tablename=?"
-                             userName tablename])]
-    (not (nil? (first results)))))
+  [username tablename]
+  (let [tbls (jdbc/query db-spec
+                         ["select id from tables where tablename=?"
+                          tablename])
+        tbluser (jdbc/query db-spec
+                            ["select * from tableuser where tableid=? and username=?"
+                             (:id (first tbls)) username])]
+    (not (nil? (first tbluser)))))
 
 
-(defn userid-by-token
+(defn username-by-token
   "Accepts a token string and
   returns a username string."
   [token]
@@ -58,9 +137,9 @@
   "Accepts a userName string and returns
   a clojure list of all of the user's table."
   [token]
-  (let [userName (userid-by-token token)
+  (let [userName (username-by-token token)
         results (jdbc/query db-spec
-                            ["select * from tables where userName=?"
+                            ["select * from tableuser where userName=?"
                              userName])]
     results))
 

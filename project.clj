@@ -8,9 +8,27 @@
                  [hiccup "1.0.5"]
                  [buddy "2.0.0"]
                  [org.clojure/java.jdbc "0.7.5"]
-                 [com.h2database/h2 "1.4.193"]]
-  :plugins [[lein-ring "0.9.7"]]
+                 [com.h2database/h2 "1.4.193"]
+                 [org.clojure/clojurescript "1.10.238"]]
+  :plugins [[lein-ring "0.9.7"]
+            [lein-cljsbuild "1.1.1"]]
   :ring {:handler storit.handler/app}
-  :profiles
-  {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
-                        [ring/ring-mock "0.3.0"]]}})
+  :cljsbuild
+  {:builds
+   {:app
+    {:source-paths ["src/cljs"]
+     :compiler {:output-to "target/cljsbuild/public/js/app.js"
+                :output-dir "target/cljsbuild/public/js/out"
+                :main "storit.core"
+                :asset-path "/js/out"
+                :optimizations :none
+                :source-map true
+                :pretty-print true}}}}
+  :clean-targets
+  ^{:protect false}
+  [:target-path
+   [:cljsbuild :builds :app :compiler :output-dir]
+   [:cljsbuild :builds :app :compiler :output-to]]
+  :profiles {:dev
+             {:dependencies [[javax.servlet/servlet-api "2.5"]
+                             [ring/ring-mock "0.3.0"]]}})
