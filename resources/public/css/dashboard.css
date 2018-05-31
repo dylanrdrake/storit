@@ -120,6 +120,37 @@ body {
 /* table content controls */
 
 
+/* table fields bar */
+#tbl-fields-bar {
+  margin: 0% auto 0% auto;
+  height: 45px;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  background-color: #444444;
+  width: 95%;
+}
+/* table fields bar */
+
+
+/* table items */
+#tbl-items-div {
+  max-height: 85%;
+  overflow: auto;
+}
+::-webkit-scrollbar {
+  display: none;
+}
+.tbl-item-row {
+  margin: 0% auto 0% auto;
+  height: 45px;
+  background-color: #333333;
+  width: 95%;
+  color: #eeeeee;
+  border-top: solid 1px #444444;
+}
+/* table items */
+
+
 #hamburger {
   position: absolute;
   top: 2%;
@@ -157,5 +188,14 @@ body {
     width: 100%;
     border-radius: 0;
     margin: 0;
+  }
+
+  .tbl-item-row {
+    width: 100%;
+  }
+  #tbl-fields-bar {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 0px;
   }
 }

@@ -60,7 +60,8 @@
   ([dataid data]
    (let [results (jdbc/update! db-spec
                                :tabledata {:id dataid
-                                           :value data})])))
+                                           :value data})]
+     (first (vals (first results))))))
 
 
 (defn get-table-fields
@@ -91,21 +92,23 @@
         data-by-id (group-by :id data)]
     {:tableid tableid
      :tablename tablename
-     :fields fields
+     :fields (map #(select-keys % [:id :fieldname :fieldtype]) fields)
      :items
      (map (fn
             [item]
-            (assoc item :data
-                   (map (fn
-                          [field]
-                          (let [fieldid (:id field)
-                                dataid (str "1" "-" fieldid)]
-                            (merge (select-keys field [:fieldtype
-                                                       :fieldname])
-                                   (select-keys
-                                    (first (get data-by-id dataid))
-                                    [:value]))))
-                        fields)))
+            (let [itemdata (select-keys item [:id :sku :name :data])
+                  itemid (:id item)]
+              (assoc itemdata :data
+                     (map (fn
+                            [field]
+                            (let [fieldid (:id field)
+                                  dataid (str itemid "-" fieldid)]
+                              (merge (select-keys field [:fieldtype
+                                                         :fieldname])
+                                     (select-keys
+                                      (first (get data-by-id dataid))
+                                      [:value]))))
+                          fields))))
           items)}))
 
 

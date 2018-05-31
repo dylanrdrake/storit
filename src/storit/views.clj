@@ -108,11 +108,24 @@
      [:img {:src "/images/search32.png" :id "search-tbl-img"}]]]))
 
 
+(defn gen-fields-bar
+  [fields]
+  (core/html
+   [:div {:id "tbl-fields-bar"}
+    (map (fn [field]
+           [:div {:class "tbl-field-div"} (:fieldname field)])
+         fields)]))
+
+
 (defn gen-tbl-view
   [tabledata]
   (core/html
    (gen-tbl-ctrl-bar)
-   tabledata))
+   (gen-fields-bar (:fields tabledata))
+   [:div {:id "tbl-items-div"}
+    (map (fn [item]
+           [:div {:class "tbl-item-row"} (:data item)])
+         (:items tabledata))]))
 
 
 (defn gen-new-table
@@ -137,7 +150,7 @@
   ([token content]
    (dashboard-page token content nil))
   ([token content active-tbl]
-   (let [userName (db/username-by-token token)
+   (let [username (db/username-by-token token)
          tables (db/get-all-user-tables token)]
      (page/html5
       (gen-page-head "Storit" "global.css"
@@ -148,7 +161,7 @@
 
        ; SIDE BAR
        [:div {:id "side-bar"}
-        [:div {:id "username"} userName]
+        [:div {:id "username"} username]
         ; logout and settings
         [:div {:id "logout-sett-div"}
          [:a {:href "/logout" :title "Logout"}
