@@ -1,0 +1,44 @@
+(ns server.api
+  (:require [server.db :as db]
+            [ring.util.response :as resp]))
+
+
+(defn create-table
+  "Accepts table name string and an auth token,
+  checks if table exists and returns table data."
+  [token tablename]
+  (let [username (db/username-by-token token)
+        exists? (db/user-tablename-exists? username tablename)]
+    (if exists?
+      {:status 500 :body "Table by that name already exists."}
+      (db/create-storit-table tablename username))))
+
+
+(defn get-table
+  ""
+  [token tableid]
+  (let [username (db/username-by-token token)
+        userhastable? (db/user-tableid-exists? username tableid)]
+    (if userhastable?
+      (db/get-storit-table tableid)
+      {:status 404 :body "Table by that ID does not exist."})))
+
+
+(defn delete-table
+  "Accepts a table Id, checks if user owns table,
+  then calls database delete-table function"
+  [token tableid]
+  (let [username (db/username-by-token token)
+        owner? (db/user-owns-table? username tableid)]
+    (if owner?
+      (db/delete-storit-table tableid)
+      {:status 500 :body "Invalid table ID."})))
+
+
+(defn create-api-token
+  "Accepts an auth token and creates
+  a new API token record for that user."
+  [token]
+  (let [userName (db/username-by-token token)
+        newtoken (db/new-token userName "api")]
+    newtoken))
