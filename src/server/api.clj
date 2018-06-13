@@ -14,6 +14,17 @@
       (db/create-storit-table tablename username))))
 
 
+(defn update-table-data
+  [token tableid data]
+  (let [username (db/username-by-token token)
+        canedit? (db/user-canedit-table? username tableid)]
+    (if canedit?
+      (db/update-data tableid
+                      (:itemid data)
+                      (:fieldid data)
+                      (:value data)))))
+
+
 (defn get-table
   ""
   [token tableid]

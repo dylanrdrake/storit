@@ -144,6 +144,15 @@
     (not (nil? (first results)))))
 
 
+(defn user-canedit-table?
+  [username tableid]
+  (let [results (jdbc/query db-spec
+                            ["select * from tableuser where username=? and tableid=? and canedit=true"
+                             username
+                             tableid])]
+    (not (nil? (first results)))))
+
+
 (defn username-by-token
   "Accepts a token string and
   returns a username string."

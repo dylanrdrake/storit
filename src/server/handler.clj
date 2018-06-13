@@ -81,11 +81,12 @@
        (api/get-table (:value (get headers "Authorization"))
                       (last (str/split uri #"/"))))
   (PUT "/api/tables/:tableid"
-       {headers :headers}
-       (api/update-table (:value (get headers "Authorization"))
-                         (last (str/split uri #"/"))))
+       {headers :headers params :params uri :uri}
+       (api/update-table-data (:value (get headers "Authorization"))
+                              (last (str/split uri #"/"))
+                              (:data params)))
   (DELETE "/api/tables/:tableid"
-       {headers :headers params :params}
+       {headers :headers params :params uri :uri}
        (api/delete-table (:value (get headers "Authorization"))
                          (last (str/split uri #"/")))))
 

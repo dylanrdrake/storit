@@ -25,33 +25,6 @@
                          :asset-path "js/dash/out"
                          :optimizations :none
                          :source-map true
-                         :pretty-print true}}
-            :dash-home
-             {:source-paths ["src/client"]
-              :compiler {:output-to "resources/public/js/dash-home/dash-home.js"
-                         :output-dir "resources/public/js/dash-home/out"
-                         :main "client.dash-home"
-                         :asset-path "js/dash-home/out"
-                         :optimizations :none
-                         :source-map true
-                         :pretty-print true}}
-            :dash-table
-             {:source-paths ["src/client"]
-              :compiler {:output-to "resources/public/js/dash-table/dash-table.js"
-                         :output-dir "resources/public/js/dash-table/out"
-                         :main "client.dash-table"
-                         :asset-path "js/dash-table/out"
-                         :optimizations :none
-                         :source-map true
-                         :pretty-print true}}
-            :auth
-             {:source-paths ["src/client"]
-              :compiler {:output-to "resources/public/js/auth/auth.js"
-                         :output-dir "resources/public/js/auth/out"
-                         :main "client.auth"
-                         :asset-path "js/auth/out"
-                         :optimizations :none
-                         :source-map true
                          :pretty-print true}}}}
   :clean-targets ^{:protect false}
    [:target-path

@@ -3,6 +3,7 @@
 
 
 (defn get-auth-token
+  "Returns auth token from cookies"
   []
   (let [cookie (js/decodeURIComponent js/document.cookie)]
     (if (str/includes? cookie "authtoken")

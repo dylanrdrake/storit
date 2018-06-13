@@ -1,8 +1,5 @@
 (ns client.dash-table)
-;  (:require [client.dash :as dash]))
-
-
-;(dash/setup)
+  (:require [client.dash :as dash]))
 
 
 (defn gen-tbl-ctrl-bar
