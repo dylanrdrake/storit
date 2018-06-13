@@ -63,17 +63,3 @@
     (if loggedin?
       (resp/redirect "/dashboard")
       (views/home-page))))
-
-
-(defn dash-settings
-  "Accepts an auth `token` and returns the
-  setting's dashboard view."
-  [token]
-  (views/dashboard-page token (views/gen-sett-cont token)))
-
-
-(defn dash-new-table
-  "Accepts an auth `token` and returns the
-  new table form's dashboard view."
-  [token]
-  (views/dashboard-page token (views/gen-new-table)))

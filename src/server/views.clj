@@ -73,8 +73,7 @@
   []
   (core/html
    [:h1 "Home"]
-   [:div {:id "dash-home-div"}]
-   (page/include-js "/js/dash-home/dash-home.js")))
+   [:div {:id "dash-home-div"}]))
 
 
 (defn dashboard-page
@@ -87,6 +86,6 @@
          tables (db/get-all-user-tables token)]
      (page/html5
       (gen-page-head "Storit" "global.css"
-                     "dashboard.css" "inputs.css")
+                     "dashboard.css" "inputs.css" "dash.js")
       [:div {:id "container"}
-       [:img {:src "/images/hamburger.png" :id "hamburger"}])))))
+       [:img {:src "/images/hamburger.png" :id "hamburger"}]]))))

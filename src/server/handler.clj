@@ -59,16 +59,14 @@
   (GET "/dashboard"
        {cookies :cookies}
        (views/dashboard-page (:value (get cookies "authtoken"))))
-  (GET "/dashboard/settings"
-       {cookies :cookies}
-       (web/dash-settings (:value (get cookies "authtoken"))))
-  (GET "/dashboard/new-table"
-       {cookies :cookies}
-       (web/dash-new-table (:value (get cookies "authtoken"))))
   (route/not-found "Not Found"))
 
 
 (defroutes api-routes
+  "API endpoints"
+  (GET "/api/user"
+       {headers :headers}
+       (api/get-users-data (:value (get headers "Authorization"))))
   (POST "/api/user/create-api-token"
        {headers :headers}
        (api/create-api-token (:value (get headers "Authorization"))))

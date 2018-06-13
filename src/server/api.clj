@@ -1,6 +1,19 @@
 (ns server.api
-  (:require [server.db :as db]
-            [ring.util.response :as resp]))
+  (:require [clojure.edn :as edn]
+            [server.db :as db]))
+
+
+(defn get-users-data
+  ""
+  [token]
+  (let [username (db/username-by-token token)
+        email (:email (first (db/get-user username)))
+        tokens (db/get-all-tokens username)
+        tables (db/get-all-user-tables token)]
+    (prn-str {:username username
+              :email email
+              :tokens (into [] tokens)
+              :tables (into [] tables)})))
 
 
 (defn create-table
@@ -15,6 +28,7 @@
 
 
 (defn update-table-data
+  ""
   [token tableid data]
   (let [username (db/username-by-token token)
         canedit? (db/user-canedit-table? username tableid)]
