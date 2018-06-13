@@ -1,1 +1,0 @@
-{:output-dir "resources/public/js/dash/out", :externs ["closure-js/externs"], :optimizations :none, :output-to "resources/public/js/dash/dash.js", :asset-path "js/dash/out", :output-wrapper false, :source-map true, :libs ["closure-js/libs"], :main "client.dash", :pretty-print true}
