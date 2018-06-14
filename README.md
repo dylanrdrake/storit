@@ -1,4 +1,4 @@
-# Storit
+<img src="https://i.imgur.com/M6ui15x.png" width="100" />
 
 A light, simple persistent inventory tracker that stores data in an h2 instance and serves it via a restful API. A browser client is served from this API and will offer a simple GUI to access user data but, *eventually*, an Android client will be the main client platform that will access the the API.
 
@@ -23,10 +23,16 @@ open a repl
 
     lein repl
     
-run database setup. this creates the database in the root directory of the project. 
+Setup the database. this creates the database in the root directory of the project. 
 
     (require '[migrations.setup :as setup])
     (setup/setup-db)
+
+Close the repl with Ctrl-d
+
+Compile the ClojureScript to Javascript.
+
+    lein cljsbuild once
 
 To start a web server for the application, run:
 
