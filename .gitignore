@@ -11,3 +11,4 @@ pom.xml.asc
 *.db
 /resources/public/js
 figwheel_server.log
+.rebel_readline_history
