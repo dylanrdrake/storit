@@ -84,7 +84,7 @@
   "Setup up initial state on page load."
   (do
     (get-user-data)
-    (r/render [app] (.-body js/document))))
+    (r/render [app] (.getElementById js/document "container"))))
 
 
 (load-init)
