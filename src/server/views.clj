@@ -12,10 +12,7 @@
    [:title title]
    (map page/include-css
         (map #(str "/css/" %)
-             (filter #(string/includes? % ".css") resources)))
-   (map page/include-js
-        (map #(str "/js/" %)
-             (filter #(string/includes? % ".js") resources)))])
+             (filter #(string/includes? % ".css") resources)))])
 
 
 (defn home-page
@@ -86,6 +83,7 @@
          tables (db/get-all-user-tables token)]
      (page/html5
       (gen-page-head "Storit" "global.css"
-                     "dashboard.css" "inputs.css" "dash.js")
+                     "dashboard.css" "inputs.css")
       [:div {:id "container"}
+       (page/include-js "/js/dash/dash.js")
        [:img {:src "/images/hamburger.png" :id "hamburger"}]]))))

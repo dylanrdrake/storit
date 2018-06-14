@@ -17,7 +17,7 @@
   [handler]
   (fn [request]
     (let [uri (:uri request)
-          token (:authorization (:headers request))
+          token (get (:headers request) "authorization")
           authed? (db/token-exists? token)]
       (if authed?
         (handler request)
@@ -66,7 +66,7 @@
   "API endpoints"
   (GET "/api/user"
        {headers :headers}
-       (api/get-users-data (:value (get headers "Authorization"))))
+       (api/get-users-data (get headers "authorization")))
   (POST "/api/user/create-api-token"
        {headers :headers}
        (api/create-api-token (:value (get headers "Authorization"))))

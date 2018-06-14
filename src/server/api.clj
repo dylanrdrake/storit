@@ -7,13 +7,14 @@
   ""
   [token]
   (let [username (db/username-by-token token)
-        email (:email (first (db/get-user username)))
+        email (:email (db/get-user username))
         tokens (db/get-all-tokens username)
         tables (db/get-all-user-tables token)]
-    (prn-str {:username username
-              :email email
-              :tokens (into [] tokens)
-              :tables (into [] tables)})))
+    {:status 200
+     :body (prn-str {:username username
+                     :email email
+                     :tokens (into [] tokens)
+                     :tables (into [] tables)})}))
 
 
 (defn create-table
