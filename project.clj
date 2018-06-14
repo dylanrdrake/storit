@@ -13,13 +13,14 @@
                  [reagent "0.8.1"]
                  [cljs-ajax "0.7.3"]]
   :plugins [[lein-ring "0.9.7"]
-            [lein-cljsbuild "1.1.1"]]
+            [lein-figwheel "0.5.16"]]
   :ring {:handler server.handler/app}
   :resource-paths ["resources"]
   :cljsbuild
   {:builds {
             :dash
              {:source-paths ["src/client"]
+              :figwheel true
               :compiler {:output-to "resources/public/js/dash/dash.js"
                          :output-dir "resources/public/js/dash/out"
                          :main "client.dash"
