@@ -1,6 +1,16 @@
 (ns server.api
-  (:require [clojure.edn :as edn]
+  (:require [cognitect.transit :as t]
             [server.db :as db]))
+(import [java.io ByteArrayInputStream ByteArrayOutputStream])
+
+
+(defn write [x]
+  (let [baos (ByteArrayOutputStream.)
+        w    (t/writer baos :json)
+        _    (t/write w x)
+        ret  (.toString baos)]
+    (.reset baos)
+    ret))
 
 
 (defn get-users-data
@@ -11,21 +21,26 @@
         tokens (db/get-all-tokens username)
         tables (db/get-all-user-tables token)]
     {:status 200
-     :body (prn-str {:username username
-                     :email email
-                     :tokens (into [] tokens)
-                     :tables (into [] tables)})}))
+     :header {"Content-Type" "application/transit+json"}
+     :body (write {:username username
+                   :email email
+                   :tokens (into [] tokens)
+                   :tables (into [] tables)})}))
 
 
 (defn create-table
   "Accepts table name string and an auth token,
   checks if table exists and returns table data."
-  [token tablename]
+  [token data]
   (let [username (db/username-by-token token)
+        tablename (:tablename data)
         exists? (db/user-tablename-exists? username tablename)]
     (if exists?
       {:status 500 :body "Table by that name already exists."}
-      (db/create-storit-table tablename username))))
+      (let [newtableid (db/create-storit-table username tablename)]
+        {:status 200
+         :header {"Content-Type" "application/transit+json"}
+         :body (write {:tableid newtableid})}))))
 
 
 (defn update-table-data

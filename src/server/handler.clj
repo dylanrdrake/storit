@@ -70,10 +70,9 @@
   (POST "/api/user/create-api-token"
        {headers :headers}
        (api/create-api-token (:value (get headers "Authorization"))))
-  (POST "/api/tables/create-table"
+  (GET "/api/tables/create-table"
        {headers :headers params :params}
-       (api/create-table (:value (get headers "Authorization"))
-                         (:tablename params)))
+       (api/create-table (:value (get headers "Authorization")) params))
   (GET "/api/tables/:tableid"
        {headers :headers uri :uri}
        (api/get-table (:value (get headers "Authorization"))

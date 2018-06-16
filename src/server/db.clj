@@ -21,7 +21,7 @@
   creates a new TABLE record and returns the tableid."
   [username tablename]
   (let [results (jdbc/insert! db-spec
-                              :tables {:tablename (name tablename)})
+                              :tables {:tablename tablename})
         newtableid (first (vals (first results)))]
     (create-table-user newtableid tablename username true true)
     newtableid))
