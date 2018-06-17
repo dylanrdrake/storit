@@ -4,6 +4,7 @@
             [cognitect.transit :as t]
             [client.auth :as auth]))
 
+
 (def table
   "Active table data."
   (r/atom {}))
@@ -13,6 +14,7 @@
 
 
 (defn get-user-data
+  ""
   [userdata]
   (GET "/api/user"
        :headers {"Authorization" (auth/get-auth-token)}
@@ -21,6 +23,7 @@
 
 
 (defn get-table
+  ""
   [tableid]
   (GET (str "/api/tables/" tableid)
        :headers {"Authorization" (auth/get-auth-token)}
@@ -28,19 +31,13 @@
        :handler #(reset! table %)))
 
 
-(defn send-table
-  [tableid]
-  (PUT (str "/api/tables/" tableid)
-       :headers {"Authorization" (auth/get-auth-token)}
-       :params @table))
-
-
 (defn create-table
   [fields errors]
   (GET "/api/tables/create-table"
        :headers {"Authorization" (auth/get-auth-token)}
+       :format :transit
        :response-format :transit
-       :params (t/write w @fields)
+       :params {:data (t/write w @fields)}
        :handler #(.alert js/window %)))
 
 

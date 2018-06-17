@@ -8,7 +8,9 @@
             [ring.util.response :as resp]
             [ring.middleware.defaults :refer [wrap-defaults
                                               site-defaults]]
+            [ring.middleware.params :refer [wrap-params]]
             [clojure.string :as str]))
+
 
 (defn wrap-api-auth?
   "Middleware that checks if an API
@@ -68,8 +70,8 @@
        {headers :headers}
        (api/get-users-data (get headers "authorization")))
   (POST "/api/user/create-api-token"
-       {headers :headers}
-       (api/create-api-token (:value (get headers "Authorization"))))
+        {headers :headers}
+        (api/create-api-token (:value (get headers "Authorization"))))
   (GET "/api/tables/create-table"
        {headers :headers params :params}
        (api/create-table (:value (get headers "Authorization")) params))
@@ -78,12 +80,12 @@
        (api/get-table (:value (get headers "Authorization"))
                       (last (str/split uri #"/"))))
   (PUT "/api/tables/:tableid"
-       {headers :headers params :params uri :uri}
+       {headers :headers uri :uri data :params}
        (api/update-table-data (:value (get headers "Authorization"))
                               (last (str/split uri #"/"))
-                              (:data params)))
+                              data))
   (DELETE "/api/tables/:tableid"
-       {headers :headers params :params uri :uri}
+       {headers :headers uri :uri}
        (api/delete-table (:value (get headers "Authorization"))
                          (last (str/split uri #"/")))))
 
@@ -91,7 +93,8 @@
 (def app
   (routes
    (-> api-routes
-       (wrap-routes wrap-api-auth?))
+       (wrap-routes wrap-api-auth?)
+       (wrap-defaults site-defaults))
    (-> app-routes
        (wrap-routes wrap-logged-in?)
        (wrap-defaults site-defaults))))

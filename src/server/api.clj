@@ -4,12 +4,20 @@
 (import [java.io ByteArrayInputStream ByteArrayOutputStream])
 
 
-(defn write [x]
+(defn write-tr [data]
   (let [baos (ByteArrayOutputStream.)
         w    (t/writer baos :json)
-        _    (t/write w x)
+        _    (t/write w data)
         ret  (.toString baos)]
     (.reset baos)
+    ret))
+
+
+(defn read-tr [data]
+  (let [bais (ByteArrayInputStream. (.getBytes data))
+        r    (t/reader bais :json)
+        ret  (t/read r)]
+    (.reset bais)
     ret))
 
 
@@ -22,25 +30,25 @@
         tables (db/get-all-user-tables token)]
     {:status 200
      :header {"Content-Type" "application/transit+json"}
-     :body (write {:username username
-                   :email email
-                   :tokens (into [] tokens)
-                   :tables (into [] tables)})}))
+     :body (write-tr {:username username
+                      :email email
+                      :tokens (into [] tokens)
+                      :tables (into [] tables)})}))
 
 
 (defn create-table
   "Accepts table name string and an auth token,
   checks if table exists and returns table data."
-  [token data]
+  [token params]
   (let [username (db/username-by-token token)
-        tablename (:tablename data)
+        tablename (:tablename (read-tr (:data params)))
         exists? (db/user-tablename-exists? username tablename)]
     (if exists?
       {:status 500 :body "Table by that name already exists."}
       (let [newtableid (db/create-storit-table username tablename)]
         {:status 200
          :header {"Content-Type" "application/transit+json"}
-         :body (write {:tableid newtableid})}))))
+         :body (write-tr {:tableid newtableid})}))))
 
 
 (defn update-table-data

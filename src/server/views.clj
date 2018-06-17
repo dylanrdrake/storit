@@ -20,7 +20,10 @@
   (page/html5
    (gen-page-head "Storit" "global.css" "home.css" "inputs.css")
    [:div {:id "logo-login-container"}
-    [:h1 {:id "logo"} "Storit"]
+    [:img {:id "logo" :src "images/logo.png" :width "400px"}]
+    [:br]
+    [:br]
+    [:br]
     (form/form-to {:id "login-form"}
                   [:get "/login"]
                   [:input {:name "username"
@@ -41,7 +44,7 @@
     [:br]
     [:br]
     [:a {:href "/new-user"} "New User?"]
-    [:p messages]]))
+    [:p#login-messages messages]]))
 
 
 (defn new-user-page
