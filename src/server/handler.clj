@@ -71,22 +71,22 @@
        (api/get-users-data (get headers "authorization")))
   (POST "/api/user/create-api-token"
         {headers :headers}
-        (api/create-api-token (:value (get headers "Authorization"))))
+        (api/create-api-token (get headers "authorization")))
   (GET "/api/tables/create-table"
        {headers :headers params :params}
-       (api/create-table (:value (get headers "Authorization")) params))
+       (api/create-table (get headers "authorization") params))
   (GET "/api/tables/:tableid"
        {headers :headers uri :uri}
-       (api/get-table (:value (get headers "Authorization"))
+       (api/get-table (get headers "authorization")
                       (last (str/split uri #"/"))))
   (PUT "/api/tables/:tableid"
        {headers :headers uri :uri data :params}
-       (api/update-table-data (:value (get headers "Authorization"))
+       (api/update-table-data (get headers "authorization")
                               (last (str/split uri #"/"))
                               data))
   (DELETE "/api/tables/:tableid"
        {headers :headers uri :uri}
-       (api/delete-table (:value (get headers "Authorization"))
+       (api/delete-table (get headers "authorization")
                          (last (str/split uri #"/")))))
 
 

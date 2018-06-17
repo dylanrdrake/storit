@@ -5,13 +5,13 @@
 
 
 (defn create-table-user
-  [tableid tablename username owner canedit]
+  [tableid tablename username owner? canedit?]
   (let [results (jdbc/insert! db-spec
                               :tableuser {:tableid tableid
                                           :tablename tablename
                                           :username username
-                                          :owner owner
-                                          :canedit canedit})]
+                                          :owner owner?
+                                          :canedit canedit?})]
     results))
 
 

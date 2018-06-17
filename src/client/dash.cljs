@@ -1,21 +1,21 @@
 (ns client.dash
   (:require [reagent.core :as r]
             [ajax.core :refer [GET PUT POST]]
-            [cognitect.transit :as t]
             [client.auth :as auth]))
 
+
+(def userdata
+  "User level data."
+  (r/atom {}))
 
 (def table
   "Active table data."
   (r/atom {}))
 
 
-(def w (t/writer :json))
-
-
 (defn get-user-data
   ""
-  [userdata]
+  []
   (GET "/api/user"
        :headers {"Authorization" (auth/get-auth-token)}
        :response-format :transit
@@ -35,10 +35,9 @@
   [fields errors]
   (GET "/api/tables/create-table"
        :headers {"Authorization" (auth/get-auth-token)}
-       :format :transit
        :response-format :transit
-       :params {:data (t/write w @fields)}
-       :handler #(.alert js/window %)))
+       :params @fields
+       :handler get-user-data))
 
 
 (defn contents
@@ -112,21 +111,18 @@
 
 (defn side-bar
   []
-  (let [userdata (r/atom {})]
-    (get-user-data userdata)
-    (fn []
-      [:div {:id "side-bar"}
-       [:div {:id "username"} (:username @userdata)]
-       ;logout and settings
-       [:div {:id "logout-sett-div"}
-        [:a {:href "/logout" :title "Logout"}
-         [:div {:id "logout-btn" :class "logout-sett"}
-          [:img {:src "/images/logout32.png"}]]]
-        [:a {:on-click show-settings :title "Settings"}
-         [:div {:id "sett-btn" :class "logout-sett"}
-          [:img {:src "/images/settings32.png"}]]]]
-       ;tables
-       [table-list (:tables @userdata)]])))
+  [:div {:id "side-bar"}
+   [:div {:id "username"} (:username @userdata)]
+   ;logout and settings
+   [:div {:id "logout-sett-div"}
+    [:a {:href "/logout" :title "Logout"}
+     [:div {:id "logout-btn" :class "logout-sett"}
+      [:img {:src "/images/logout32.png"}]]]
+    [:a {:on-click show-settings :title "Settings"}
+     [:div {:id "sett-btn" :class "logout-sett"}
+      [:img {:src "/images/settings32.png"}]]]]
+   ;tables
+   [table-list (:tables @userdata)]])
 
 
 (defn app
@@ -139,6 +135,8 @@
 
 (defn load []
   "Render App."
-  (r/render [app] (.getElementById js/document "container")))
+  (let []
+    (get-user-data)
+    (r/render [app] (.getElementById js/document "container"))))
 
 (load)

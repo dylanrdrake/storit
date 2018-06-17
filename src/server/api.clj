@@ -12,14 +12,14 @@
     (.reset baos)
     ret))
 
-
+(comment
 (defn read-tr [data]
   (let [bais (ByteArrayInputStream. (.getBytes data))
         r    (t/reader bais :json)
         ret  (t/read r)]
     (.reset bais)
     ret))
-
+)
 
 (defn get-users-data
   ""
@@ -41,7 +41,7 @@
   checks if table exists and returns table data."
   [token params]
   (let [username (db/username-by-token token)
-        tablename (:tablename (read-tr (:data params)))
+        tablename (:tablename params)
         exists? (db/user-tablename-exists? username tablename)]
     (if exists?
       {:status 500 :body "Table by that name already exists."}
