@@ -38,7 +38,7 @@
 
 (defn create-table
   "Accepts table name string and an auth token,
-  checks if table exists and returns table data."
+  checks if table exists and returns table id."
   [token params]
   (let [username (db/username-by-token token)
         tablename (:tablename params)
@@ -49,6 +49,46 @@
         {:status 200
          :header {"Content-Type" "application/transit+json"}
          :body (write-tr {:tableid newtableid})}))))
+
+
+(defn create-field
+  "Accepts an auth token and field form data,
+  checks if table exists, checks if user can edit
+  and returns new field id."
+  [token params]
+  (let [username (db/username-by-token token)
+        tableid (:tableid params)
+        fieldname (:fieldname params)
+        fieldtype (:fieldtype params)
+        canedit? (db/user-canedit-table? username tableid)
+        fieldexists? (db/field-exists? tableid fieldname)]
+    (if canedit?
+      (if fieldexists?
+        {:status 500 :body "Field by that name already exists."}
+        (let [newfieldid (db/create-field tableid fieldname fieldtype)]
+          {:status 200
+           :header {"Content-Type" "application/transit+json"}
+           :body (write-tr {:fieldid newfieldid})}))
+      {:status 500 :body "You do not have access to a table by that ID."})))
+
+
+(defn create-item
+  ""
+  [token params]
+  (let [username (db/username-by-token token)
+        tableid (:tableid params)
+        itemsku (:itemsku params)
+        itemname (:itemname params)
+        canedit? (db/user-canedit-table? username tableid)
+        itemexists? (db/item-exists? tableid itemsku)]
+    (if canedit?
+      (if itemexists?
+        {:status 500 :body "Item by that SKU already exists."}
+        (let [newitemid (db/create-item tableid itemsku itemname)]
+          {:status 200
+           :header {"Content-Type" "application/transit+json"}
+           :body (write-tr {:fieldid newitemid})}))
+      {:status 500 :body "You do not have access to a table by that ID."})))
 
 
 (defn update-table-data
@@ -69,7 +109,7 @@
   (let [username (db/username-by-token token)
         userhastable? (db/user-tableid-exists? username tableid)]
     (if userhastable?
-      (db/get-storit-table tableid)
+      (write-tr (db/get-storit-table tableid))
       {:status 404 :body "Table by that ID does not exist."})))
 
 

@@ -12,12 +12,18 @@ body {
   background-color: #444444;
   max-width: 20%;
   width: 20%;
+  color: #eeeeee;
 }
 
 #contents {
   background-color: #333333;
   max-width: 80%;
   width: 100%;
+  text-align: center;
+}
+
+.btn {
+  cursor: pointer;
 }
 
 
@@ -39,17 +45,24 @@ body {
 
 #sett-btn {
   float: right;
-  margin-right: 5%;
+  padding-right: 5%;
+  padding-left: 5%;
+  border-top-left-radius: 45%;
+  border-bottom-left-radius: 45%;
+}
+#sett-btn:hover {
+  background-color: #333333;
 }
 
-
+#table-list-title {
+    text-align: right;
+    vertical-align: bottom;
+    font-size: 20px;
+}
 #table-list {
   margin-top: 10%;
 }
 
-.tbl-list-link {
-  text-decoration: none;
-}
 .tbl-list-div {
   text-align: left;
   font-size: 1.5vw;
@@ -59,60 +72,79 @@ body {
 .tbl-list-div:hover {
   background-color: #333333;
 }
-
 .active-tbl {
-  color: #fff;
   background-color: #333333;
   color: #8cf442;
 }
 
 #new-tbl-div {
   text-align: center;
+  padding-top: 5%;
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-bottom: 0%;
 }
 #new-tbl-img {
   margin-top: 1vh;
 }
 
 
+/* new table form */
+#new-table-form {
+  width: 100%;
+}
+  
+
 /* table content controls */
 #tbl-ctrl-bar {
   margin: 1% auto;
   height: 45px;
-  border-radius: 22px;
+  border-bottom-right-radius: 22px;
+  border-bottom-left-radius: 22px;
   background-color: #444444;
   width: 95%;
 }
 .tbl-ctrl-div {
-  height: 100%;
+  height: 95%;
 }
 
 #add-item-ctrl-div {
   float: left;
   text-align: center;
+  height: 100%;
+  padding-right: 10px;
+  cursor: pointer;
+}
+#add-item-ctrl-div:hover {
+  border-right: solid 1px #333333;
 }
 #add-item-img {
   margin-left: 6px;
   margin-top: 6px;
 }
 
+
 #search-tbl-div {
   float: right;
-  width: 300px;
   border: solid 1px #444444;
   text-align: center;
   background-color: #333333;
-  height: 97%;
   border-radius: 22px;
+  padding-left: 2%;
 }
 #search-tbl-img {
   float: right;
   margin-top: 5px;
   margin-right: 9px;
+  cursor: pointer;
+  padding-left: 10px;
+}
+#search-tbl-img:hover {
+  border-left: solid 1px #555555;
 }
 #search-tbl-input {
-  background-color: #333333;
-  color: #fff;
-  border: none;
+  font-size: 30px;
+  height: 92%;
 }
 #search-tbl-input:focus {
   outline-width: 0;
@@ -122,29 +154,180 @@ body {
 
 /* table fields bar */
 #tbl-fields-bar {
-  margin: 0% auto 0% auto;
+  margin: 1% auto 0% auto;
   height: 45px;
   border-top-left-radius: 22px;
   border-top-right-radius: 22px;
   background-color: #444444;
   width: 95%;
 }
+#tbl-fields-bar .fields-bar-section {
+  height: 100%;
+}
+#tbl-fields {
+  float: left;
+  display: table;
+}
+#tbl-fields div {
+  display: table-cell;
+  padding: 10px;
+  font-size: 24px;
+  vertical-align: middle;
+  color: #222222;
+  border-right: solid 1px #333333;
+  height: 100%;
+}
+#add-field-div {
+  float: right;
+  text-align: center;
+  padding-left: 1%;
+  cursor: pointer;
+}
+#add-field-div:hover {
+  border-left: solid 1px #333333;
+}
+#add-field-img {
+  margin-right: 6px;
+  margin-top: 7px;
+}
+
 /* table fields bar */
+
+/* new field form */
+#new-field-form {
+  margin: 1% auto 0% auto;
+  height: 45px;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+  background-color: #444444;
+  width: 95%;
+}
+.field-form-div {
+  margin-right: 4vw;
+  border-radius: 22px;
+  height: 95%;
+  float: right;
+  border: solid 1px #444444;
+  text-align: center;
+  background-color: #333333;
+}
+.field-form-div input,select {
+  border-radius: 22px;
+  height: 95%;
+}
+#new-field-form div img {
+  height: 45px;
+}
+#fieldname-input {
+  padding-left: 5%;
+  font-size: 30px;
+}
+#fieldtype-select {
+  font-size: 28px;
+  padding-left: 5%;
+  color: #dddddd;
+}
+#form-title-div {
+  float: left;
+  color: #333333;
+  font-size: 36px;
+  height: 100%;
+  margin-left: 2vw;
+}
+#confirm-field-div {
+  float: right;
+  margin-right: 1%;
+  cursor: pointer;
+}
+#confirm-field-img:hover {
+  border-left: solid 1px #333333;
+}
+#cancel-field-div {
+  float: right;
+  margin-right: 3%;
+  cursor: pointer;
+}
+#cancel-field-img:hover {
+  border-right: solid 1px #333333;
+  border-left: solid 1px #333333;
+}
+/* new field form */
+
+
+/* new item form */
+#new-item-form {
+  margin: 1% auto 0% auto;
+  height: 45px;
+  border-bottom-left-radius: 22px;
+  border-bottom-right-radius: 22px;
+  background-color: #444444;
+  width: 95%;
+}
+.item-form-div {
+  margin-right: 4vw;
+  border-radius: 22px;
+  height: 95%;
+  float: right;
+  border: solid 1px #444444;
+  text-align: center;
+  background-color: #333333;
+}
+.item-form-div input,select {
+  border-radius: 22px;
+  height: 95%;
+}
+#new-item-form div img {
+  height: 45px;
+}
+#item-sku-input {
+  padding-left: 5%;
+  font-size: 30px;
+}
+#item-name-input {
+  padding-left: 5%;
+  font-size: 30px;
+}
+.form-title-div {
+  float: left;
+  color: #333333;
+  font-size: 36px;
+  height: 100%;
+  margin-left: 2vw;
+}
+#confirm-item-div {
+  float: right;
+  margin-right: 1%;
+  cursor: pointer;
+}
+#confirm-item-img:hover {
+  border-left: solid 1px #333333;
+}
+#cancel-item-div {
+  float: right;
+  margin-right: 3%;
+  cursor: pointer;
+}
+#cancel-item-img:hover {
+  border-right: solid 1px #333333;
+  border-left: solid 1px #333333;
+}
+/* new field form */
 
 
 /* table items */
 #tbl-items-div {
   max-height: 85%;
   overflow: auto;
+  width: 95%;
+  margin: 0% auto 0% auto;
 }
 ::-webkit-scrollbar {
   display: none;
 }
 .tbl-item-row {
-  margin: 0% auto 0% auto;
   height: 45px;
   background-color: #333333;
-  width: 95%;
+  width: 100%;
   color: #eeeeee;
   border-top: solid 1px #444444;
 }
@@ -153,10 +336,9 @@ body {
 
 #hamburger {
   position: absolute;
-  top: 2%;
+  top: 8px;
   left: 2%;
   display: none;
-  cursor: pointer;
 }
 
 @media screen and (max-width: 800px) {

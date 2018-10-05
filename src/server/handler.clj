@@ -85,9 +85,15 @@
                               (last (str/split uri #"/"))
                               data))
   (DELETE "/api/tables/:tableid"
-       {headers :headers uri :uri}
-       (api/delete-table (get headers "authorization")
-                         (last (str/split uri #"/")))))
+          {headers :headers uri :uri}
+          (api/delete-table (get headers "authorization")
+                            (last (str/split uri #"/"))))
+  (GET "/api/fields/create-field"
+       {headers :headers params :params}
+       (api/create-field (get headers "authorization") params))
+  (GET "/api/items/create-item"
+       {headers :headers params :params}
+       (api/create-item (get headers "authorization") params)))
 
 
 (def app

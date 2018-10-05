@@ -20,8 +20,7 @@
   (page/html5
    (gen-page-head "Storit" "global.css" "home.css" "inputs.css")
    [:div {:id "logo-login-container"}
-    [:img {:id "logo" :src "images/logo.png" :width "400px"}]
-    [:br]
+    [:img {:id "logo" :src "images/logo.png" :width "340px"}]
     [:br]
     [:br]
     (form/form-to {:id "login-form"}

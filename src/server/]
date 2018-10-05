@@ -36,15 +36,6 @@
     (first (vals (first results)))))
 
 
-(defn create-item
-  [tableid itemsku itemname]
-  (let [results (jdbc/insert! db-spec
-                              :items {:tableid tableid
-                                      :sku itemsku
-                                      :name itemname})]
-    (first (vals (first results)))))
-
-
 (defn create-table-item
   "Takes a tableId int, creates a
   new ITEMS table record, returns an itemId int"
@@ -99,7 +90,7 @@
                          ["select * from tabledata where tableid=?"
                           tableid])
         data-by-id (group-by :id data)]
-    {:tableid (Integer. tableid)
+    {:tableid tableid
      :tablename tablename
      :fields (map #(select-keys % [:id :fieldname :fieldtype]) fields)
      :items
@@ -159,24 +150,6 @@
                             ["select * from tableuser where username=? and tableid=? and canedit=true"
                              username
                              tableid])]
-    (not (nil? (first results)))))
-
-
-(defn field-exists?
-  [tableid fieldname]
-  (let [results (jdbc/query db-spec
-                            ["select * from fields where tableid=? and fieldname=?"
-                             tableid
-                             fieldname])]
-    (not (nil? (first results)))))
-
-
-(defn item-exists?
-  [tableid itemsku]
-  (let [results (jdbc/query db-spec
-                            ["select * from items where tableid=? and sku=?"
-                             tableid
-                             itemsku])]
     (not (nil? (first results)))))
 
 
