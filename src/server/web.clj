@@ -1,6 +1,6 @@
-(ns storit.web
-  (:require [storit.db :as db]
-            [storit.views :as views]
+(ns server.web
+  (:require [server.db :as db]
+            [server.views :as views]
             [buddy.hashers :as hs]
             [ring.util.response :as resp]))
 
@@ -14,7 +14,7 @@
 
 (defn create-new-user
   "Takes `username` and `password` strings,
-  calls `storit.db/create-user` with `username`
+  calls `server.db/create-user` with `username`
   and hashed `password` if username doesn't exist."
   [username password]
   (let [exists (db/user-exists? username)
@@ -63,43 +63,3 @@
     (if loggedin?
       (resp/redirect "/dashboard")
       (views/home-page))))
-
-
-(defn dash-table
-  "Accepts an auth `token` and a `tableid`
-  and returns the table's dashboard view."
-  [token tableid]
-  (let [tabledata (db/get-storit-table tableid)]
-    (views/dashboard-page token
-                          (views/gen-tbl-view tabledata)
-                          tableid)))
-
-
-(defn dash-settings
-  "Accepts an auth `token` and returns the
-  setting's dashboard view."
-  [token]
-  (views/dashboard-page token (views/gen-sett-cont token)))
-
-
-(defn dash-new-table
-  "Accepts an auth `token` and returns the
-  new table form's dashboard view."
-  [token]
-  (views/dashboard-page token (views/gen-new-table)))
-
-
-(defn create-table
-  "Accepts auth `token` and `tablename`, checks
-  if table already exists, returns new table's dash
-  view if not, new table form dash view if it does."
-  [token tablename]
-  (let [username (db/username-by-token token)
-        exists? (db/storit-table-exists? username tablename)]
-    (if exists?
-      (views/dashboard-page token
-                            (views/gen-new-table
-                             "Table already exists."))
-      (resp/redirect (str "/dashboard/table/" (db/create-storit-table
-                                                username
-                                                tablename))))))

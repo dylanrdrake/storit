@@ -1,5 +1,5 @@
-(ns storit.db-test
+(ns server.db-test
   (:require [clojure.test :refer :all]
             [ring.mock.request :as mock]
-            [storit.db :refer :all]))
+            [server.db :refer :all]))
 

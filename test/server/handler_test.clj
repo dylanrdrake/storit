@@ -1,7 +1,7 @@
-(ns storit.handler-test
+(ns server.handler-test
   (:require [clojure.test :refer :all]
             [ring.mock.request :as mock]
-            [storit.handler :refer :all]))
+            [server.handler :refer :all]))
 
 (deftest web-routes
   (testing "GET /"

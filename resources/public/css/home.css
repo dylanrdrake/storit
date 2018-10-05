@@ -1,12 +1,29 @@
 body {
-  text-align: center;
+    text-align: center;
 }
 
 
 #logo {
-  font-size: 7vw;
+    margin-top: 5%;
 }
 
+#login-form input {
+    height: 45px;
+    font-size: 30px;
+    border-radius: 22px;
+    background-color: #333333;
+    color: #eeeeee;
+    border: solid 1px #444444;
+    padding-left: 12px;
+}
+#login-form input:focus {
+    background-color: #333333;
+}
+    
 .login-btn {
-  background-color: inherit;
+    background-color: inherit;
+}
+
+#login-messages {
+    color: #FD573C;
 }

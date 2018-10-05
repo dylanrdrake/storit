@@ -1,17 +1,17 @@
-(ns storit.db
+(ns server.db
   (:require [clojure.java.jdbc :as jdbc]))
 
 (def db-spec {:dbtype "h2" :dbname "./storit"})
 
 
 (defn create-table-user
-  [tableid tablename username owner canedit]
+  [tableid tablename username owner? canedit?]
   (let [results (jdbc/insert! db-spec
                               :tableuser {:tableid tableid
                                           :tablename tablename
                                           :username username
-                                          :owner owner
-                                          :canedit canedit})]
+                                          :owner owner?
+                                          :canedit canedit?})]
     results))
 
 
@@ -21,7 +21,7 @@
   creates a new TABLE record and returns the tableid."
   [username tablename]
   (let [results (jdbc/insert! db-spec
-                              :tables {:tablename (name tablename)})
+                              :tables {:tablename tablename})
         newtableid (first (vals (first results)))]
     (create-table-user newtableid tablename username true true)
     newtableid))
@@ -112,7 +112,16 @@
           items)}))
 
 
-(defn storit-table-exists?
+(defn user-tableid-exists?
+  [username tableid]
+  (let [results (jdbc/query db-spec
+                            ["select * from tableuser where username=? and tableid=?"
+                             username
+                             tableid])]
+    (not (nil? (first results)))))
+
+
+(defn user-tablename-exists?
   "Accepts username and table name strings
   and returns true if storit table by that
   name exists and false if not."
@@ -124,6 +133,24 @@
                             ["select * from tableuser where tableid=? and username=?"
                              (:id (first tbls)) username])]
     (not (nil? (first tbluser)))))
+
+
+(defn user-owns-table?
+  [username tableid]
+  (let [results (jdbc/query db-spec
+                            ["select * from tableuser where username=? and tableid=? and owner=true"
+                             username
+                             tableid])]
+    (not (nil? (first results)))))
+
+
+(defn user-canedit-table?
+  [username tableid]
+  (let [results (jdbc/query db-spec
+                            ["select * from tableuser where username=? and tableid=? and canedit=true"
+                             username
+                             tableid])]
+    (not (nil? (first results)))))
 
 
 (defn username-by-token
@@ -186,7 +213,7 @@
     results))
 
 
-(defn create-token
+(defn gen-token
   "Returns a unique alpha-numeric token."
   []
   (let [nums (map char (range 48 58))
@@ -195,7 +222,7 @@
         token (reduce str
                       (take 36 (repeatedly #(rand-nth alphanum))))]
     (if (token-exists? token)
-      (create-token)
+      (gen-token)
       token)))
 
 
@@ -203,7 +230,7 @@
   "Accepts a userName string and token use and
   inserts a new token record in TOKENS."
   [userName & uses]
-  (let [newtoken (create-token)
+  (let [newtoken (gen-token)
         results (jdbc/insert! db-spec
                               :tokens
                               {:token newtoken

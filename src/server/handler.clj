@@ -1,14 +1,16 @@
-(ns storit.handler
-  (:require [storit.db :as db]
-            [storit.web :as web]
-            [storit.api :as api]
-            [storit.views :as views]
+(ns server.handler
+  (:require [server.db :as db]
+            [server.web :as web]
+            [server.api :as api]
+            [server.views :as views]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [ring.util.response :as resp]
             [ring.middleware.defaults :refer [wrap-defaults
                                               site-defaults]]
+            [ring.middleware.params :refer [wrap-params]]
             [clojure.string :as str]))
+
 
 (defn wrap-api-auth?
   "Middleware that checks if an API
@@ -17,7 +19,7 @@
   [handler]
   (fn [request]
     (let [uri (:uri request)
-          token (:authorization (:headers request))
+          token (get (:headers request) "authorization")
           authed? (db/token-exists? token)]
       (if authed?
         (handler request)
@@ -40,7 +42,7 @@
 
 
 (defroutes app-routes
-  "Webapp routes."
+  "Webapp routes"
   (GET "/"
        {cookies :cookies}
        (web/home (:value (get cookies "authtoken"))))
@@ -59,41 +61,46 @@
   (GET "/dashboard"
        {cookies :cookies}
        (views/dashboard-page (:value (get cookies "authtoken"))))
-  (GET "/dashboard/settings"
-       {cookies :cookies}
-       (web/dash-settings (:value (get cookies "authtoken"))))
-  (GET "/dashboard/new-table"
-       {cookies :cookies}
-       (web/dash-new-table (:value (get cookies "authtoken"))))
-  (GET "/dashboard/create-table"
-       {cookies :cookies params :params}
-       (web/create-table (:value (get cookies "authtoken"))
-                         (:tablename params)))
-  (GET "/dashboard/table/:tableid"
-       {cookies :cookies uri :uri}
-       (web/dash-table (:value (get cookies "authtoken"))
-                       (last (str/split uri #"/"))))
   (route/not-found "Not Found"))
 
 
 (defroutes api-routes
-  (GET "/api/create-api-token"
+  "API endpoints"
+  (GET "/api/user"
        {headers :headers}
-       (api/create-api-token (:value (get headers "Authorization"))))
-  (GET "/api/create-table"
+       (api/get-users-data (get headers "authorization")))
+  (POST "/api/user/create-api-token"
+        {headers :headers}
+        (api/create-api-token (get headers "authorization")))
+  (GET "/api/tables/create-table"
        {headers :headers params :params}
-       (api/create-table (:tablename params)
-                         (:value (get headers "Authorization"))))
-  (GET "/api/delete-table"
+       (api/create-table (get headers "authorization") params))
+  (GET "/api/tables/:tableid"
+       {headers :headers uri :uri}
+       (api/get-table (get headers "authorization")
+                      (last (str/split uri #"/"))))
+  (PUT "/api/tables/:tableid"
+       {headers :headers uri :uri data :params}
+       (api/update-table-data (get headers "authorization")
+                              (last (str/split uri #"/"))
+                              data))
+  (DELETE "/api/tables/:tableid"
+          {headers :headers uri :uri}
+          (api/delete-table (get headers "authorization")
+                            (last (str/split uri #"/"))))
+  (GET "/api/fields/create-field"
        {headers :headers params :params}
-       (api/delete-table (:value (get headers "Authorization"))
-                         (:tableid params))))
+       (api/create-field (get headers "authorization") params))
+  (GET "/api/items/create-item"
+       {headers :headers params :params}
+       (api/create-item (get headers "authorization") params)))
 
 
 (def app
   (routes
    (-> api-routes
-       (wrap-routes wrap-api-auth?))
+       (wrap-routes wrap-api-auth?)
+       (wrap-defaults site-defaults))
    (-> app-routes
        (wrap-routes wrap-logged-in?)
        (wrap-defaults site-defaults))))

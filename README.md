@@ -23,10 +23,16 @@ open a repl
 
     lein repl
     
-run database setup. this creates the database in the root directory of the project. 
+Setup the database. this creates the database in the root directory of the project. 
 
     (require '[migrations.setup :as setup])
     (setup/setup-db)
+
+Close the repl with Ctrl-d
+
+Compile the ClojureScript to Javascript.
+
+    lein cljsbuild once
 
 To start a web server for the application, run:
 
