@@ -14,7 +14,8 @@
                  [cljs-ajax "0.7.3"]
                  [com.cognitect/transit-clj "0.8.309"]]
   :plugins [[lein-ring "0.9.7"]
-            [lein-figwheel "0.5.16"]]
+            [lein-figwheel "0.5.16"]
+            [lein-cljsbuild "1.1.7"]]
   :ring {:handler server.handler/app}
   :resource-paths ["resources"]
   :cljsbuild
