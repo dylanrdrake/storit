@@ -3,13 +3,13 @@
             [ajax.core :refer [GET PUT POST]]
             [client.auth :as auth]))
 
-
+; global app state
 (def appstate
   (r/atom {}))
 
 
+; API calls
 (defn get-user-data
-  ""
   []
   (GET "/api/user"
        :headers {"Authorization" (auth/get-auth-token)}
@@ -18,7 +18,6 @@
 
 
 (defn get-table
-  ""
   [tableid]
   (GET (str "/api/tables/" tableid)
        :headers {"Authorization" (auth/get-auth-token)}
@@ -41,7 +40,7 @@
        :headers {"Authorization" (auth/get-auth-token)}
        :response-format :transit
        :params data
-       :handler (get-table (:tableid data))))
+       :handler #(get-table (:tableid data))))
 
 
 (defn create-item
@@ -50,7 +49,7 @@
        :headers {"Authorization" (auth/get-auth-token)}
        :response-format :transit
        :params data
-       :handler (get-table (:tableid data))))
+       :handler #(get-table (:tableid data))))
 
 
 (defn new-table-form
@@ -212,9 +211,8 @@
 
 (defn show-table
   [tableid]
-  (do
-    (get-table tableid)
-    (swap! appstate assoc :contents "table-view")))
+  (get-table tableid)
+  (swap! appstate assoc :contents "table-view"))
 
 
 (defn settings

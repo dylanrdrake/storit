@@ -9,7 +9,7 @@ body {
 
 
 #side-bar {
-  background-color: #444444;
+  background-color: #555555;
   max-width: 20%;
   width: 20%;
   color: #eeeeee;
@@ -92,6 +92,10 @@ body {
 /* new table form */
 #new-table-form {
   width: 100%;
+  color: #eeeeee;
+}
+#new-table-form button {
+  color: #eeeeee;
 }
   
 
@@ -101,7 +105,7 @@ body {
   height: 45px;
   border-bottom-right-radius: 22px;
   border-bottom-left-radius: 22px;
-  background-color: #444444;
+  background-color: #555555;
   width: 95%;
 }
 .tbl-ctrl-div {
@@ -126,7 +130,7 @@ body {
 
 #search-tbl-div {
   float: right;
-  border: solid 1px #444444;
+  border: solid 1px #555555;
   text-align: center;
   background-color: #333333;
   border-radius: 22px;
@@ -158,7 +162,7 @@ body {
   height: 45px;
   border-top-left-radius: 22px;
   border-top-right-radius: 22px;
-  background-color: #444444;
+  background-color: #555555;
   width: 95%;
 }
 #tbl-fields-bar .fields-bar-section {
@@ -199,7 +203,7 @@ body {
   height: 45px;
   border-top-left-radius: 22px;
   border-top-right-radius: 22px;
-  background-color: #444444;
+  background-color: #555555;
   width: 95%;
 }
 .field-form-div {
@@ -207,7 +211,7 @@ body {
   border-radius: 22px;
   height: 95%;
   float: right;
-  border: solid 1px #444444;
+  border: solid 1px #555555;
   text-align: center;
   background-color: #333333;
 }
@@ -260,7 +264,7 @@ body {
   height: 45px;
   border-bottom-left-radius: 22px;
   border-bottom-right-radius: 22px;
-  background-color: #444444;
+  background-color: #555555;
   width: 95%;
 }
 .item-form-div {
@@ -268,7 +272,7 @@ body {
   border-radius: 22px;
   height: 95%;
   float: right;
-  border: solid 1px #444444;
+  border: solid 1px #555555;
   text-align: center;
   background-color: #333333;
 }
@@ -329,7 +333,7 @@ body {
   background-color: #333333;
   width: 100%;
   color: #eeeeee;
-  border-top: solid 1px #444444;
+  border-top: solid 1px #555555;
 }
 /* table items */
 
