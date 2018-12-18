@@ -3,9 +3,13 @@
             [ajax.core :refer [GET PUT POST]]
             [client.auth :as auth]))
 
-; global app state
-(def appstate
-  (r/atom {}))
+
+; State
+(def userdata (r/atom {}))
+(def working-table (r/atom {}))
+(def work-space-comp (r/atom :home-view))
+(def controls (r/atom :ready))
+; State 
 
 
 ; API calls
@@ -14,16 +18,14 @@
   (GET "/api/user"
        :headers {"Authorization" (auth/get-auth-token)}
        :response-format :transit
-       :handler #(swap! appstate assoc :user-data %)))
-
+       :handler #(reset! userdata %)))
 
 (defn get-table
   [tableid]
   (GET (str "/api/tables/" tableid)
        :headers {"Authorization" (auth/get-auth-token)}
        :response-format :transit
-       :handler #(swap! appstate assoc :active-table %)))
-
+       :handler #(reset! working-table %)))
 
 (defn create-table
   [formdata errors]
@@ -33,7 +35,6 @@
        :params @formdata
        :handler get-user-data))
 
-
 (defn create-field
   [data]
   (GET "/api/fields/create-field"
@@ -42,7 +43,6 @@
        :params data
        :handler #(get-table (:tableid data))))
 
-
 (defn create-item
   [data]
   (GET "/api/items/create-item"
@@ -50,242 +50,157 @@
        :response-format :transit
        :params data
        :handler #(get-table (:tableid data))))
+; API Calls
 
 
-(defn new-table-form
+; Home
+(defn home-view
   []
-  (let [formdata (r/atom {})
-        errors (r/atom {})]
-    [:div#new-table-form
-     [:h1 "Create New Table"]
-     [:input {:name "tablename"
-              :size "20"
-              :placeholder "table name"
-              :on-change #(swap! formdata assoc
-                                 :tablename (-> % .-target .-value))}]
-     [:br]
-     [:br]
-     [:button {:on-click #(create-table formdata errors)} "Create"]
-     [:p "possible error message"]]))
+  [:div "Home View"])
+; Home
 
 
-(defn new-table
-  []
-  (swap! appstate assoc :active-table nil)
-  (swap! appstate assoc :contents "new-tbl-form"))
-
-
-(defn confirm-new-field
-  [formdata]
-  (let [tableid (:tableid (:active-table @appstate))
-        data (assoc @formdata :tableid tableid)]
-    (create-field data)
-    (swap! appstate dissoc :fields-bar)))
-
-
-(defn cancel-field-form
-  []
-  (swap! appstate dissoc :fields-bar))
-
-
-(defn new-field-form
-  []
-  (let [formdata (r/atom {})]
-    [:div {:id "new-field-form"}
-     [:div {:id "confirm-field-div" :on-click #(confirm-new-field formdata)}
-      [:img {:src "/images/checkgreen.png" :id "confirm-field-img"}]]
-     [:div {:id "fieldtype-div" :class "field-form-div"}
-      [:select {:id "fieldtype-select"
-                :name "fieldtype"
-                :type "select"
-                :on-change #(swap! formdata assoc
-                                   :fieldtype (-> % .-target .-value))}
-       [:option {:selected 1 :disabled 1} "Type..."]
-       [:option "Text"]
-       [:option "Number"]
-       [:option "Decimal"]
-       [:option "Boolean"]]]
-     [:div {:id "fieldname-div" :class "field-form-div"}
-      [:input {:id "fieldname-input"
-               :name "fieldname"
-               :size "20"
-               :placeholder "Name..."
-               :on-change #(swap! formdata assoc
-                                  :fieldname (-> % .-target .-value))}]]
-     [:div {:id "cancel-field-div" :on-click cancel-field-form}
-      [:img {:src "/images/cancel.png" :id "cancel-field-img"}]]
-     [:div {:id "form-title-div"} "New Field"]]))
-
-
-(defn new-field
-  []
-  (swap! appstate assoc :fields-bar "new-field-form"))
-
-
-(defn tbl-fields-bar
-  []
-  (fn []
-    (let [fields (:fields (:active-table @appstate))]
-      [:div {:id "tbl-fields-bar"}
-       [:div {:id "tbl-fields" :class "fields-bar-section"}
-        (map (fn [field]
-               [:div {:class "tbl-field-div"} (:fieldname field)])
-             fields)]
-       [:div {:id "add-field-div" :class "fields-bar-section"
-              :on-click new-field}
-        [:img {:src "/images/addorange32.png" :id "add-field-img"}]]])))
-
-
-(defn confirm-new-item
-  [formdata]
-  (let [tableid (:tableid (:active-table @appstate))
-        data (assoc @formdata :tableid tableid)]
-    (create-item data)
-    (swap! appstate dissoc :ctrl-bar)))
-
-
-(defn cancel-item-form
-  []
-  (swap! appstate dissoc :ctrl-bar))
-
-
-(defn new-item-form
-  []
-  (let [formdata (r/atom {})]
-    [:div {:id "new-item-form"}
-     [:div {:id "confirm-item-div" :on-click #(confirm-new-item formdata)}
-      [:img {:src "/images/checkgreen.png" :id "confirm-item-img"}]]
-     [:div {:id "item-sku-div" :class "item-form-div"}
-      [:input {:id "item-sku-input"
-               :name "itemsku"
-               :size "10"
-               :placeholder "SKU..."
-               :on-change #(swap! formdata assoc
-                                  :itemsku (-> % .-target .-value))}]]
-     [:div {:id "item-name-div" :class "item-form-div"}
-      [:input {:id "item-name-input"
-               :name "itemname"
-               :size "20"
-               :placeholder "Name..."
-               :on-change #(swap! formdata assoc
-                                  :itemname (-> % .-target .-value))}]]
-     [:div {:id "cancel-item-div" :on-click cancel-item-form}
-      [:img {:src "/images/cancel.png" :id "cancel-item-img"}]]
-     [:div {:class "form-title-div"} "New Item"]]))
-
-
-(defn new-item
-  []
-  (swap! appstate assoc :ctrl-bar "new-item-form"))
-
-
-(defn tbl-ctrl-bar
-  []
-  (fn []
-    [:div {:id "tbl-ctrl-bar"}
-     [:div {:class "tbl-ctrl-div" :id "add-item-ctrl-div"
-            :on-click new-item}
-      [:img {:src "/images/addgreen32.png" :id "add-item-img"}]]
-     [:div {:class "tbl-ctrl-div" :id "search-tbl-div"}
-      [:input {:type "text" :size "10" :placeholder "SKU, Name"
-               :id "search-tbl-input"}]
-      [:img {:src "/images/search32.png" :id "search-tbl-img"}]]]))
-
-
+; Table View
 (defn table-view
   []
   (fn []
-    (let [items (:items (:active-table @appstate))]
-      [:div {:id "tbl-view"}
-       (if (= (:fields-bar @appstate) "new-field-form")
-         [new-field-form]
-         [tbl-fields-bar])
-       [:div {:id "tbl-items-div"}
-        (map (fn [item]
-               [:div {:class "tbl-item-row"} (:data item)])
-             items)]
-       (if (= (:ctrl-bar @appstate) "new-item-form")
-         [new-item-form]
-         [tbl-ctrl-bar])])))
+    (let [table @working-table
+          fields (:fields table)
+          items (:items table)]
+      [:div {:id "table-view"}
+       ; Data
+       [:table {:id "data-table"}
+        [:thead {:id "data-table-thead"}
+         [:tr
+          (map
+           (fn [field] [:th {:id (str "field-" (:id field))}
+                        (:fieldname field)])
+           fields)]]
+        [:tbody {:id "data-table-tbody"}
+         (map
+          (fn [item]
+            [:tr
+             (let [data (:data item)]
+               (map
+                (fn [d]
+                  [:td d])
+                data))])
+          items)]]
+       ; Controls
+       (cond
+         ; Default
+         (= @controls :ready)
+         [:div {:id "table-controls"}
+          [:div {:id "new-field-cont" :class "selectable"
+                 :on-click #(reset! controls :field)}
+           [:img {:id "add-field-img" :src "/images/addorange32.png"}]]
+          [:div {:id "new-item-cont" :class "selectable"
+                 :on-click #(create-item {})}
+           [:img {:id "new-item-img"
+                  :src "/images/addgreen32.png"}]]
+          [:div {:id "search-item-cont" :class "selectable"}
+           [:img {:id "search-item-img"
+                  :src "/images/search32.png"}]]]
+         ; New Field Form
+         (= @controls :field)
+         (let [field-data (r/atom {})]
+           [:div {:id "new-field-form"}
+            [:div {:id "new-field-name-cont" :class "field-form-field"}
+             [:input
+              {:name "fieldname"
+               :placeholder "Field name..."
+               :on-change #(swap! field-data assoc
+                                  :fieldname (-> % .-target .-value))}]]
+            [:div {:id "new-field-type-cont" :class "field-form-field"}
+             [:select
+              {:name "fieldtype"
+               :type "select"
+               :on-change #(swap! field-data assoc
+                                  :fieldtype (-> % .-target .-value))}
+              [:option {:selected 1 :disabled 1} "Type..."]
+              [:option "Text"]
+              [:option "Number"]
+              [:option "Decimal"]
+              [:option "Boolean"]]]
+            [:div {:id "new-field-yes-no"}
+             [:div {:id "new-field-cancel-cont" :class "selectable"
+                    :on-click #(reset! controls :ready)}
+              [:img {:src "/images/cancel.png"}]]
+             [:div {:id "new-field-confirm-cont" :class "selectable"
+                    :on-click #(let [tableid (:tableid @working-table)
+                                     data (assoc @field-data :tableid tableid)]
+                                 (create-field data)
+                                 (reset! controls :ready))}
+              [:img {:src "/images/checkgreen.png"}]]]]))])))
+; Table View
+                
 
-
-(defn show-table
-  [tableid]
-  (get-table tableid)
-  (swap! appstate assoc :contents "table-view"))
-
-
-(defn settings
+; Work Space ------------------------------------------------------------------
+(defn work-space
   []
-  [:div "user's settings"])
-
-
-(defn show-settings
-  []
-  (swap! appstate assoc :contents "settings"))
-
-
-(defn tbl-btn
-  [table]
   (fn []
-    (let [active-table (:active-table @appstate)
-          props {:on-click #(show-table (:tableid table))
-                 :id (str "table-" (:tableid table))
-                 :class "tbl-list-div btn"}]
-      [:div (if (= (:tableid table) (:tableid active-table))
-              (assoc props :class "tbl-list-div btn active-tbl")
-              props)
-       (:tablename table)])))
+    [:div {:id "work-space"}
+     (if (= @work-space-comp :table-view)
+       [table-view]
+       [home-view])]))
+; Work Space ------------------------------------------------------------------
 
 
-(defn table-list
-  [tables]
-  [:div {:id "table-list"}
-   ; new table btn
-   [:div (if (= (:contents @appstate) "new-tbl-form")
-           {:class "tbl-list-div btn active-tbl" :id "new-tbl-div"
-            :title "New Table" :on-click new-table}
-           {:class "tbl-list-div btn" :id "new-tbl-div"
-            :title "New Table" :on-click new-table})
-    [:img {:src "/images/new-table32.png" :id "new-tbl-img"}]
-    [:div {:id "table-list-title"} "Tables"]]
-   ; list of user's tables
-   (for [table tables]
-     [tbl-btn table])])
- 
+; Side Bar --------------------------------------------------------------------
+(defn select-settings
+  [active-opt]
+  (reset! active-opt "settings"))
+  
+(defn select-table
+  [tableid active-opt]
+  (do
+    (reset! active-opt tableid)
+    (reset! controls :ready)
+    (reset! work-space-comp :table-view)
+    (get-table tableid)))
+
+(defn select-new-tbl
+  [active-opt]
+  (reset! active-opt "new-tbl"))
 
 (defn side-bar
   []
-  [:div {:id "side-bar"}
-   [:div {:id "username"} (:username (:user-data @appstate))]
-   ;logout and settings
-   [:div {:id "logout-sett-div"}
-    [:a {:href "/logout" :title "Logout"}
-     [:div {:id "logout-btn" :class "logout-sett"}
-      [:img {:src "/images/logout32.png"}]]]
-    [:div (if (= (:contents @appstate) "settings")
-            {:id "sett-btn" :class "logout-sett btn active-tbl"
-             :on-click show-settings :title "Settings"}
-            {:id "sett-btn" :class "logout-sett btn"
-             :on-click show-settings :title "Settings"})
-     [:img {:src "/images/settings32.png"}]]]
-   ;tables
-   [table-list (:tables (:user-data @appstate))]])
-
-
-(defn contents
-  []
-  (let [contents (:contents @appstate)]
-    [:div {:id "contents"}
-     (if (= contents "home")
-       "Home"
-       (if (= contents "new-tbl-form")
-         [new-table-form]
-         (if (= contents "settings")
-           [settings]
-           (if (= contents "table-view")
-             [table-view]
-             "nothing"))))]))
+  (let [active-opt (r/atom "home")]
+    (fn []
+      [:div {:id "side-bar"}
+       ; Username
+       [:div {:id "username-row"} (:username @userdata)]
+       ; Logout and Settings Buttons
+       [:div {:id "logout-sett-row"}
+        ; logout
+        [:a {:href "/logout" :title "Logout"}
+         [:div {:id "logout-btn" :class "selectable"}
+          [:img {:src "/images/logout32.png"}]]]]
+       ; New Table Btn
+       [:div (let [props {:id "new-tbl-row" :title "New Table"
+                          :on-click #(select-new-tbl active-opt)
+                          :class "btn selectable tbl-option"}]
+               (if (= @active-opt "new-tbl")
+                 (assoc props :class (str (:class props) " active-opt"))
+                 props))
+        [:img {:src "/images/new-table32.png" :id "new-tbl-img"}]]
+       ; Table List
+       [:div {:id "tbl-list-col"}
+        ; have to deref active-opt outside of lazy
+        ; sequence (map) to avoid warning
+        (let [active @active-opt]
+          (map
+           (fn [table]
+             (let [props {:on-click #(select-table (:tableid table) active-opt)
+                          :id (str "table-" (:tableid table))
+                          :key (str "table-" (:tableid table))
+                          :class "tbl-btn-row btn selectable tbl-option"}]
+               [:div (if (= active (:tableid table))
+                       (assoc props :class (str (:class props) " active-opt"))
+                       props)
+                (:tablename table)]))
+           (:tables @userdata)))]])))
+; Side Bar --------------------------------------------------------------------
 
 
 (defn app
@@ -293,14 +208,12 @@
   []
   [:div {:id "app"}
    [side-bar]
-   [contents]])
+   [work-space]])
 
 
 (defn load []
   "Render App."
-  (let []
-    (get-user-data)
-    (swap! appstate assoc :contents "home")
-    (r/render [app] (.getElementById js/document "container"))))
+  (get-user-data)
+  (r/render [app] (.getElementById js/document "container")))
 
 (load)

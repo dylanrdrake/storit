@@ -18,7 +18,7 @@
 (defn home-page
   [& messages]
   (page/html5
-   (gen-page-head "Storit" "global.css" "home.css" "inputs.css")
+   (gen-page-head "Storit" "global.css" "home.css")
    [:div {:id "logo-login-container"}
     [:img {:id "logo" :src "images/logo.png" :width "340px"}]
     [:br]
@@ -49,7 +49,7 @@
 (defn new-user-page
   [& messages]
   (page/html5
-   (gen-page-head "Storit" "global.css" "home.css" "inputs.css")
+   (gen-page-head "Storit" "global.css" "home.css")
    [:div {:id "create-user-container"}
     [:h1 "Create New User"]
     (form/form-to [:get "/create-new-user"]
@@ -84,8 +84,7 @@
    (let [username (db/username-by-token token)
          tables (db/get-all-user-tables token)]
      (page/html5
-      (gen-page-head "Storit" "global.css"
-                     "dashboard.css" "inputs.css")
+      (gen-page-head "Storit" "global.css" "dash.css")
       [:div {:id "container"}
        (page/include-js "/js/dash/dash.js")
        [:img {:src "/images/hamburger.png" :id "hamburger"}]]))))

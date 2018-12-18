@@ -10,3 +10,18 @@ a {
 a:visited {
   color: inherit;
 }
+
+input,select {
+  background-color: inherit;
+  color: #fff;
+  border: none;
+}
+input:focus {
+  outline-width: 0;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  background-color: inherit;
+}
