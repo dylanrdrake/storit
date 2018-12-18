@@ -28,11 +28,11 @@
        :handler #(reset! working-table %)))
 
 (defn create-table
-  [formdata errors]
+  [data errors]
   (GET "/api/tables/create-table"
        :headers {"Authorization" (auth/get-auth-token)}
        :response-format :transit
-       :params @formdata
+       :params data
        :handler get-user-data))
 
 (defn create-field
@@ -147,59 +147,67 @@
 
 
 ; Side Bar --------------------------------------------------------------------
-(defn select-settings
-  [active-opt]
-  (reset! active-opt "settings"))
-  
-(defn select-table
-  [tableid active-opt]
-  (do
-    (reset! active-opt tableid)
-    (reset! controls :ready)
-    (reset! work-space-comp :table-view)
-    (get-table tableid)))
-
-(defn select-new-tbl
-  [active-opt]
-  (reset! active-opt "new-tbl"))
-
 (defn side-bar
   []
-  (let [active-opt (r/atom "home")]
+  (let [active-opt (r/atom "home")
+        new-table-state (r/atom :ready)]
     (fn []
       [:div {:id "side-bar"}
        ; Username
        [:div {:id "username-row"} (:username @userdata)]
-       ; Logout and Settings Buttons
+
+       ; Logout section
        [:div {:id "logout-sett-row"}
-        ; logout
         [:a {:href "/logout" :title "Logout"}
          [:div {:id "logout-btn" :class "selectable"}
           [:img {:src "/images/logout32.png"}]]]]
-       ; New Table Btn
-       [:div (let [props {:id "new-tbl-row" :title "New Table"
-                          :on-click #(select-new-tbl active-opt)
-                          :class "btn selectable tbl-option"}]
-               (if (= @active-opt "new-tbl")
-                 (assoc props :class (str (:class props) " active-opt"))
-                 props))
-        [:img {:src "/images/new-table32.png" :id "new-tbl-img"}]]
+
+       ; New Table
+       (cond
+         ; Default: new table button
+         (= @new-table-state :ready)
+         [:div (let [props {:id "new-tbl-row" :title "New Table"
+                            :on-click #(do (reset! active-opt :new-tbl)
+                                           (reset! new-table-state :create))
+                            :class "btn selectable tbl-option"}]
+                 (if (= @active-opt :new-tbl)
+                   (assoc props :class (str (:class props) " active-opt"))
+                   props))
+          [:img {:src "/images/new-table32.png" :id "new-tbl-img"}]]
+         ; New table form
+         (= @new-table-state :create)
+         (let [new-table-data (r/atom {})]
+           [:div {:id "new-table-form"}
+            [:div {:id "new-table-name-cont"}
+             [:input {:id "new-table-name-input"
+                      :name "tablename"
+                      :placeholder "New table name..."
+                      :on-change #(swap! new-table-data assoc
+                                         :tablename (-> % .-target .-value))}]]
+            [:div {:id "new-table-yes-no-cont"}
+             [:div {:id "confirm-new-table"
+                    :on-click #(do (create-table @new-table-data)
+                                   (reset! new-table-state :ready))}
+              [:img {:src "/images/checkgreen.png"}]]
+             [:div {:id "cancel-new-table"}
+              [:img {:src "/images/cancel.png"}]]]]))
+
        ; Table List
        [:div {:id "tbl-list-col"}
-        ; have to deref active-opt outside of lazy
-        ; sequence (map) to avoid warning
-        (let [active @active-opt]
-          (map
-           (fn [table]
-             (let [props {:on-click #(select-table (:tableid table) active-opt)
-                          :id (str "table-" (:tableid table))
-                          :key (str "table-" (:tableid table))
-                          :class "tbl-btn-row btn selectable tbl-option"}]
-               [:div (if (= active (:tableid table))
-                       (assoc props :class (str (:class props) " active-opt"))
-                       props)
-                (:tablename table)]))
-           (:tables @userdata)))]])))
+        (map
+         (fn [table]
+           (let [props {:on-click #(do (reset! active-opt tableid)
+                                       (reset! controls :ready)
+                                       (reset! work-space-comp :table-view)
+                                       (get-table (:tableid table)))
+                        :id (str "table-" (:tableid table))
+                        :key (str "table-" (:tableid table))
+                        :class "tbl-btn-row btn selectable tbl-option"}]
+             [:div (if (= active (:tableid table))
+                     (assoc props :class (str (:class props) " active-opt"))
+                     props)
+              (:tablename table)]))
+         (:tables @userdata))]])))
 ; Side Bar --------------------------------------------------------------------
 
 
