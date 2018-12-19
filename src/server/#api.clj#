@@ -80,10 +80,11 @@
         tableid (:tableid params)
         canedit? (db/user-canedit-table? username tableid)]
     (if canedit?
-      (let [newitemid (db/create-item tableid)]
+      {:status 500 :body "Item by that SKU already exists."}
+      (let [newitemid (db/create-item tableid itemsku it)]
         {:status 200
          :header {"Content-Type" "application/transit+json"}
-         :body (write-tr {:itemid newitemid})})
+         :body (write-tr {:fieldid newitemid})})
       {:status 500 :body "You do not have access to a table by that ID."})))
 
 

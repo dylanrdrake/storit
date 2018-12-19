@@ -40,9 +40,7 @@
     (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :items
                          [[:id "int primary key auto_increment"]
-                          [:tableid "int"]
-                          [:sku "varchar"]
-                          [:name "varchar"]]))
+                          [:tableid "int"]]))
 
     (jdbc/db-do-commands conn
                          (jdbc/create-table-ddl :tabledata

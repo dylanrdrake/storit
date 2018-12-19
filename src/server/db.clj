@@ -37,11 +37,9 @@
 
 
 (defn create-item
-  [tableid itemsku itemname]
+  [tableid]
   (let [results (jdbc/insert! db-spec
-                              :items {:tableid tableid
-                                      :sku itemsku
-                                      :name itemname})]
+                              :items {:tableid tableid})]
     (first (vals (first results)))))
 
 

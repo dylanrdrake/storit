@@ -115,7 +115,8 @@
   text-align: left;
 }
 
-#data-table-thead {
+.vertical-lock {
+  display
 }
 
 #data-table-tbody {

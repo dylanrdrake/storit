@@ -28,7 +28,7 @@
        :handler #(reset! working-table %)))
 
 (defn create-table
-  [data errors]
+  [data]
   (GET "/api/tables/create-table"
        :headers {"Authorization" (auth/get-auth-token)}
        :response-format :transit
@@ -69,36 +69,38 @@
           items (:items table)]
       [:div {:id "table-view"}
        ; Data
-       [:table {:id "data-table"}
-        [:thead {:id "data-table-thead"}
-         [:tr
+       [:div {:id "table-cont"}
+        [:table {:id "data-table"}
+         [:thead {:id "data-table-thead"}
+          [:tr
+           (map
+            (fn [field] [:th {:id (str "field-" (:id field))
+                              :class "control"}
+                         (:fieldname field)])
+            fields)]]
+         [:tbody {:id "data-table-tbody"}
           (map
-           (fn [field] [:th {:id (str "field-" (:id field))}
-                        (:fieldname field)])
-           fields)]]
-        [:tbody {:id "data-table-tbody"}
-         (map
-          (fn [item]
-            [:tr
-             (let [data (:data item)]
-               (map
-                (fn [d]
-                  [:td d])
-                data))])
-          items)]]
+           (fn [item]
+             [:tr {:id (str "item-" (:id item))}
+              (let [data (:data item)]
+                (map
+                 (fn [d]
+                   [:td "value"])
+                 data))])
+           items)]]]
        ; Controls
        (cond
          ; Default
          (= @controls :ready)
          [:div {:id "table-controls"}
-          [:div {:id "new-field-cont" :class "selectable"
+          [:div {:id "new-field-cont" :class "control"
                  :on-click #(reset! controls :field)}
            [:img {:id "add-field-img" :src "/images/addorange32.png"}]]
-          [:div {:id "new-item-cont" :class "selectable"
-                 :on-click #(create-item {})}
+          [:div {:id "new-item-cont" :class "control"
+                 :on-click #(create-item {:tableid (:tableid @working-table)})}
            [:img {:id "new-item-img"
                   :src "/images/addgreen32.png"}]]
-          [:div {:id "search-item-cont" :class "selectable"}
+          [:div {:id "search-item-cont" :class "control"}
            [:img {:id "search-item-img"
                   :src "/images/search32.png"}]]]
          ; New Field Form
@@ -123,10 +125,10 @@
               [:option "Decimal"]
               [:option "Boolean"]]]
             [:div {:id "new-field-yes-no"}
-             [:div {:id "new-field-cancel-cont" :class "selectable"
+             [:div {:id "new-field-cancel-cont" :class "control"
                     :on-click #(reset! controls :ready)}
               [:img {:src "/images/cancel.png"}]]
-             [:div {:id "new-field-confirm-cont" :class "selectable"
+             [:div {:id "new-field-confirm-cont" :class "control"
                     :on-click #(let [tableid (:tableid @working-table)
                                      data (assoc @field-data :tableid tableid)]
                                  (create-field data)
@@ -189,21 +191,22 @@
                     :on-click #(do (create-table @new-table-data)
                                    (reset! new-table-state :ready))}
               [:img {:src "/images/checkgreen.png"}]]
-             [:div {:id "cancel-new-table"}
+             [:div {:id "cancel-new-table"
+                    :on-click #(reset! new-table-state :ready)}
               [:img {:src "/images/cancel.png"}]]]]))
 
        ; Table List
        [:div {:id "tbl-list-col"}
         (map
          (fn [table]
-           (let [props {:on-click #(do (reset! active-opt tableid)
+           (let [props {:on-click #(do (reset! active-opt (:tableid table))
                                        (reset! controls :ready)
                                        (reset! work-space-comp :table-view)
                                        (get-table (:tableid table)))
                         :id (str "table-" (:tableid table))
                         :key (str "table-" (:tableid table))
                         :class "tbl-btn-row btn selectable tbl-option"}]
-             [:div (if (= active (:tableid table))
+             [:div (if (= @active-opt (:tableid table))
                      (assoc props :class (str (:class props) " active-opt"))
                      props)
               (:tablename table)]))
