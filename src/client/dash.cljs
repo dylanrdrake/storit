@@ -63,77 +63,75 @@
 ; Table View
 (defn table-view
   []
-  (fn []
-    (let [table @working-table
-          fields (:fields table)
-          items (:items table)]
-      [:div {:id "table-view"}
-       ; Data
-       [:div {:id "table-cont"}
-        [:table {:id "data-table"}
-         [:thead {:id "data-table-thead"}
-          [:tr
-           (map
-            (fn [field] [:th {:id (str "field-" (:id field))
-                              :class "control"}
-                         (:fieldname field)])
-            fields)]]
-         [:tbody {:id "data-table-tbody"}
-          (map
-           (fn [item]
-             [:tr {:id (str "item-" (:id item))}
-              (let [data (:data item)]
-                (map
-                 (fn [d]
-                   [:td "value"])
-                 data))])
-           items)]]]
-       ; Controls
-       (cond
-         ; Default
-         (= @controls :ready)
-         [:div {:id "table-controls"}
-          [:div {:id "new-field-cont" :class "control"
-                 :on-click #(reset! controls :field)}
-           [:img {:id "add-field-img" :src "/images/addorange32.png"}]]
-          [:div {:id "new-item-cont" :class "control"
-                 :on-click #(create-item {:tableid (:tableid @working-table)})}
-           [:img {:id "new-item-img"
-                  :src "/images/addgreen32.png"}]]
-          [:div {:id "search-item-cont" :class "control"}
-           [:img {:id "search-item-img"
-                  :src "/images/search32.png"}]]]
-         ; New Field Form
-         (= @controls :field)
-         (let [field-data (r/atom {})]
-           [:div {:id "new-field-form"}
-            [:div {:id "new-field-name-cont" :class "field-form-field"}
-             [:input
-              {:name "fieldname"
-               :placeholder "Field name..."
-               :on-change #(swap! field-data assoc
-                                  :fieldname (-> % .-target .-value))}]]
-            [:div {:id "new-field-type-cont" :class "field-form-field"}
-             [:select
-              {:name "fieldtype"
-               :type "select"
-               :on-change #(swap! field-data assoc
-                                  :fieldtype (-> % .-target .-value))}
-              [:option {:selected 1 :disabled 1} "Type..."]
-              [:option "Text"]
-              [:option "Number"]
-              [:option "Decimal"]
-              [:option "Boolean"]]]
-            [:div {:id "new-field-yes-no"}
-             [:div {:id "new-field-cancel-cont" :class "control"
-                    :on-click #(reset! controls :ready)}
-              [:img {:src "/images/cancel.png"}]]
-             [:div {:id "new-field-confirm-cont" :class "control"
-                    :on-click #(let [tableid (:tableid @working-table)
-                                     data (assoc @field-data :tableid tableid)]
-                                 (create-field data)
-                                 (reset! controls :ready))}
-              [:img {:src "/images/checkgreen.png"}]]]]))])))
+  (let [table @working-table
+        fields (:fields table)
+        items (:items table)]
+    (fn []
+      ; Table
+      [:div {:id "table-cont"}
+       [:div {:id "table-header" :class "item-row"}
+        (map
+         (fn [field] [:div {:id (str "field-" (:id field))
+                            :class "field col control"}
+                      (:fieldname field)])
+         fields)]
+       [:div {:id "table-body"}
+        (map
+         (fn [item]
+           [:div {:id (str "item-" (:id item))
+                  :class "item-row"}
+            (let [data (:data item)]
+              (map
+               (fn [d]
+                 [:div {:class "item-val col"} "value"])
+               data))])
+         items)]]
+      ; Controls
+      (cond
+        ; Default
+        (= @controls :ready)
+        [:div {:id "controls"}
+         [:div {:id "new-field-cont" :class "control"
+                :on-click #(reset! controls :field)}
+          [:img {:id "add-field-img" :src "/images/addorange32.png"}]]
+         [:div {:id "new-item-cont" :class "control"
+                :on-click #(create-item {:tableid (:tableid @working-table)})}
+          [:img {:id "new-item-img"
+                 :src "/images/addgreen32.png"}]]
+         [:div {:id "search-item-cont" :class "control"}
+          [:img {:id "search-item-img"
+                 :src "/images/search32.png"}]]]
+        ; New Field Form
+        (= @controls :field)
+        (let [field-data (r/atom {})]
+          [:div {:id "new-field-form"}
+           [:div {:id "new-field-name-cont" :class "field-form-field"}
+            [:input
+             {:name "fieldname"
+              :placeholder "Field name..."
+              :on-change #(swap! field-data assoc
+                                 :fieldname (-> % .-target .-value))}]]
+           [:div {:id "new-field-type-cont" :class "field-form-field"}
+            [:select
+             {:name "fieldtype"
+              :type "select"
+              :on-change #(swap! field-data assoc
+                                 :fieldtype (-> % .-target .-value))}
+             [:option {:selected 1 :disabled 1} "Type..."]
+             [:option "Text"]
+             [:option "Number"]
+             [:option "Decimal"]
+             [:option "Boolean"]]]
+           [:div {:id "new-field-yes-no"}
+            [:div {:id "new-field-cancel-cont" :class "control"
+                   :on-click #(reset! controls :ready)}
+             [:img {:src "/images/cancel.png"}]]
+            [:div {:id "new-field-confirm-cont" :class "control"
+                   :on-click #(let [tableid (:tableid @working-table)
+                                    data (assoc @field-data :tableid tableid)]
+                                (create-field data)
+                                (reset! controls :ready))}
+             [:img {:src "/images/checkgreen.png"}]]]])))))
 ; Table View
                 
 

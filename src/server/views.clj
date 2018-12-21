@@ -86,5 +86,5 @@
      (page/html5
       (gen-page-head "Storit" "global.css" "dash.css")
       [:div {:id "container"}
-       (page/include-js "/js/dash/dash.js")
+       (page/include-js "/js/dash/dash.js" "/jQuery.js" "/table.js")
        [:img {:src "/images/hamburger.png" :id "hamburger"}]]))))

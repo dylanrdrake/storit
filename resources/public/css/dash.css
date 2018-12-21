@@ -1,6 +1,11 @@
-#container, #app, html, body {
-  height: 100%;
+* {
   margin: 0;
+  padding: 0;
+}
+
+html,body,#container,#app {
+  height: 100%;
+  width: 100%;
 }
 
 #app {
@@ -8,6 +13,8 @@
   flex-direction: row;
 }
 
+
+/* Button styles */
 .selectable:hover {
   background-color: #444444;
   cursor: pointer;
@@ -21,15 +28,14 @@
   background-color: #555555;
   cursor: pointer;
 }
+/* Button styles */
 
 
 /* Side bar */
 #side-bar {
-  height: 100%;
+  min-width: 15%;
   display: flex;
   flex-direction: column;
-  width: 20vw;
-  background-color: #555555;
 }
 
 .active-opt {
@@ -85,54 +91,55 @@
 
 /* Work Space */
 #work-space {
-  height: 100%;
   width: 100%;
-  border-left: 1px solid #333333;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   overflow: hidden;
 }
 /* Work Space */
 
 
-/* Table View */
-#table-view {
-  height: 100%;
+/* Table */
+#table-cont {
+  flex-grow: 12;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  overflow: hidden;
 }
 
-#table-cont {
+.col {
+  overflow: hidden;
+  min-width: 70px;
+  width:100px;
+}
+
+.item-row {
+  display: flex;
+  flex-direction: row;
+}
+
+#table-header {
+  flex-grow: 1;
+  overflow: hidden;
+  min-height: 8vh;
+}
+
+#table-body {
+  flex-grow: 8;
+  background-color: #aaaaaa;
   overflow: auto;
-  overflow-x: hidden;
 }
+/* Table */
 
-#data-table {
-  font-size: 3vh;
-  border-spacing: 0;
-}
-#data-table th,td {
-  padding: 5px;
-  text-align: left;
-}
 
-#data-table-thead {
-}
-
-#data-table-tbody {
-}
-
-#data-table-tbody tr {
-  color: #222222;
-  background-color: #ffffff;
-  border-bottom: 1px solid #333333;
-}
-#data-table-tbody tr td {
-}
-
-#table-controls {
+/* Controls */
+#controls {
+  flex-grow: 1;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
+  min-height: 8vh;
 }
 #table-controls div {
   flex-grow: 1;
@@ -176,7 +183,8 @@
   justify-content: center;
   border-right: solid 1px #444444;
 }
-/* Table View */
+/* Controls */
+
 
 /* Mobile */
 #hamburger {
