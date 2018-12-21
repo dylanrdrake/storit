@@ -103,7 +103,7 @@
      :items
      (map (fn
             [item]
-            (let [itemdata (select-keys item [:id :sku :name :data])
+            (let [itemdata (select-keys item [:id :sku :name :data :tableid])
                   itemid (:id item)]
               (assoc itemdata :data
                      (map (fn

@@ -67,71 +67,64 @@
         fields (:fields table)
         items (:items table)]
     (fn []
-      ; Table
-      [:div {:id "table-cont"}
-       [:div {:id "table-header" :class "item-row"}
-        (map
-         (fn [field] [:div {:id (str "field-" (:id field))
-                            :class "field col control"}
-                      (:fieldname field)])
-         fields)]
-       [:div {:id "table-body"}
-        (map
-         (fn [item]
-           [:div {:id (str "item-" (:id item))
-                  :class "item-row"}
-            (let [data (:data item)]
-              (map
-               (fn [d]
-                 [:div {:class "item-val col"} "value"])
-               data))])
-         items)]]
-      ; Controls
-      (cond
-        ; Default
-        (= @controls :ready)
-        [:div {:id "controls"}
-         [:div {:id "new-field-cont" :class "control"
-                :on-click #(reset! controls :field)}
-          [:img {:id "add-field-img" :src "/images/addorange32.png"}]]
-         [:div {:id "new-item-cont" :class "control"
-                :on-click #(create-item {:tableid (:tableid @working-table)})}
-          [:img {:id "new-item-img"
-                 :src "/images/addgreen32.png"}]]
-         [:div {:id "search-item-cont" :class "control"}
-          [:img {:id "search-item-img"
-                 :src "/images/search32.png"}]]]
-        ; New Field Form
-        (= @controls :field)
-        (let [field-data (r/atom {})]
-          [:div {:id "new-field-form"}
-           [:div {:id "new-field-name-cont" :class "field-form-field"}
-            [:input
-             {:name "fieldname"
-              :placeholder "Field name..."
-              :on-change #(swap! field-data assoc
-                                 :fieldname (-> % .-target .-value))}]]
-           [:div {:id "new-field-type-cont" :class "field-form-field"}
-            [:select
-             {:name "fieldtype"
-              :type "select"
-              :on-change #(swap! field-data assoc
-                                 :fieldtype (-> % .-target .-value))}
-             [:option {:selected 1 :disabled 1} "Type..."]
-             [:option "Text"]
-             [:option "Number"]
-             [:option "Decimal"]
-             [:option "Boolean"]]]
-           [:div {:id "new-field-yes-no"}
-            [:div {:id "new-field-cancel-cont" :class "control"
-                   :on-click #(reset! controls :ready)}
-             [:img {:src "/images/cancel.png"}]]
-            [:div {:id "new-field-confirm-cont" :class "control"
-                   :on-click #(let [tableid (:tableid @working-table)
-                                    data (assoc @field-data :tableid tableid)]
-                                (create-field data)
-                                (reset! controls :ready))}
-             [:img {:src "/images/checkgreen.png"}]]]])))))
+      [:div {:id "table-view"}
+       ; Table
+       [:div {:id "table-cont"}
+        [:div {:id "table-header" :class "item-row"}
+         (map
+          (fn [field] [:div {:class "field col"} (:fieldname field)])
+          fields)]
+        [:div {:id "table-body"}
+         (map
+          (fn [item] [:div {:class "item-row"} ".item-row"])
+          items)]]
+
+       ; Controls
+       (cond
+         ; Default
+         (= @controls :ready)
+         [:div {:id "controls"}
+          [:div {:id "new-field-cont" :class "control"
+                 :on-click #(reset! controls :field)}
+           [:img {:id "add-field-img" :src "/images/addorange32.png"}]]
+          [:div {:id "new-item-cont" :class "control"
+                 :on-click #(create-item {:tableid (:tableid table)})}
+           [:img {:id "new-item-img"
+                  :src "/images/addgreen32.png"}]]
+          [:div {:id "search-item-cont" :class "control"}
+           [:img {:id "search-item-img"
+                  :src "/images/search32.png"}]]]
+         ; New Field Form
+         (= @controls :field)
+         (let [field-data (r/atom {})]
+           [:div {:id "new-field-form"}
+            [:div {:id "new-field-name-cont" :class "field-form-field"}
+             [:input
+              {:name "fieldname"
+               :placeholder "Field name..."
+               :on-change #(swap! field-data assoc
+                                  :fieldname (-> % .-target .-value))}]]
+            [:div {:id "new-field-type-cont" :class "field-form-field"}
+             [:select
+              {:name "fieldtype"
+               :type "select"
+               :on-change #(swap! field-data assoc
+                                  :fieldtype (-> % .-target .-value))}
+              [:option {:selected 1 :disabled 1} "Type..."]
+              [:option "Text"]
+              [:option "Number"]
+              [:option "Decimal"]
+              [:option "Boolean"]]]
+            [:div {:id "new-field-yes-no"}
+             [:div {:id "new-field-cancel-cont" :class "control"
+                    :on-click #(reset! controls :ready)}
+              [:img {:src "/images/cancel.png"}]]
+             [:div {:id "new-field-confirm-cont" :class "control"
+                    :on-click #(let [tableid (:tableid table)
+                                     data (assoc @field-data :tableid tableid)]
+                                 (create-field data)
+                                 (reset! controls :ready))}
+              [:img {:src "/images/checkgreen.png"}]]]]))])))
 ; Table View
                 
 
@@ -195,20 +188,22 @@
 
        ; Table List
        [:div {:id "tbl-list-col"}
-        (map
-         (fn [table]
-           (let [props {:on-click #(do (reset! active-opt (:tableid table))
-                                       (reset! controls :ready)
-                                       (reset! work-space-comp :table-view)
-                                       (get-table (:tableid table)))
-                        :id (str "table-" (:tableid table))
-                        :key (str "table-" (:tableid table))
-                        :class "tbl-btn-row btn selectable tbl-option"}]
-             [:div (if (= @active-opt (:tableid table))
-                     (assoc props :class (str (:class props) " active-opt"))
-                     props)
-              (:tablename table)]))
-         (:tables @userdata))]])))
+        (let [tables (:tables @userdata) ; declare outside of lazy sequence
+              active @active-opt]
+          (map
+           (fn [table]
+             (let [props {:on-click #(do (reset! active-opt (:tableid table))
+                                         (reset! controls :ready)
+                                         (reset! work-space-comp :table-view)
+                                         (get-table (:tableid table)))
+                          :id (str "table-" (:tableid table))
+                          :key (str "table-" (:tableid table))
+                          :class "tbl-btn-row btn selectable tbl-option"}]
+               [:div (if (= active (:tableid table))
+                       (assoc props :class (str (:class props) " active-opt"))
+                       props)
+                (:tablename table)]))
+           tables))]])))
 ; Side Bar --------------------------------------------------------------------
 
 
